@@ -377,6 +377,347 @@ Verify: node scripts/playbook-completeness.js
 
 ---
 
+### Performance Marketing
+
+**Google Ads copy optimization**
+```
+/autoresearch
+Goal: Generate 50 ad headline variants (max 30 chars) with power words + CTA
+Scope: content/ads/google-search/*.md
+Metric: headlines meeting char limit + power word + CTA criteria (higher is better)
+Verify: node scripts/google-ads-validator.js --type headlines
+```
+Claude generates headline variants, scores each for character limits, emotional triggers, and CTA presence — discarding any that don't meet criteria.
+
+**Landing page CRO (Conversion Rate Optimization)**
+```
+/autoresearch
+Goal: Maximize landing page quality score — clear CTA, social proof, urgency, mobile-friendly structure
+Scope: content/landing-pages/product-launch.md
+Metric: CRO checklist score (higher is better)
+Verify: node scripts/cro-score.js content/landing-pages/product-launch.md
+```
+
+**Meta/Facebook ad copy variants**
+```
+/autoresearch
+Goal: Create 30 primary text variants (max 125 chars) optimized for engagement
+Scope: content/ads/meta/*.md
+Metric: variants meeting criteria + avg engagement score (higher is better)
+Verify: node scripts/meta-ad-validator.js
+```
+
+**A/B test hypothesis generation**
+```
+/autoresearch
+Goal: Generate 20 testable hypotheses for checkout page, each with metric + expected lift
+Scope: content/experiments/checkout-hypotheses.md
+Metric: valid hypotheses with metric + lift prediction (higher is better)
+Verify: node scripts/hypothesis-validator.js
+```
+
+**UTM campaign taxonomy**
+```
+/autoresearch
+Goal: Standardize all campaign URLs with consistent UTM parameters
+Scope: content/campaigns/utm-tracker.csv
+Metric: UTM compliance % (higher is better)
+Verify: node scripts/utm-validator.js
+```
+
+**Email subject line A/B testing**
+```
+/autoresearch
+Goal: Generate 40 subject lines for product launch — max 50 chars, personalization token, urgency
+Scope: content/emails/subject-lines.md
+Metric: lines meeting all criteria (higher is better)
+Verify: node scripts/subject-line-scorer.js
+```
+
+---
+
+### Data Science & Analytics
+
+**Data pipeline quality**
+```
+/autoresearch
+Goal: Increase data validation pass rate from 85% to 99%
+Scope: scripts/validators/*.py
+Metric: validation pass rate % (higher is better)
+Verify: python scripts/run_validations.py | grep "pass_rate"
+```
+
+**SQL query optimization**
+```
+/autoresearch
+Goal: Reduce total query execution time for dashboard queries
+Scope: queries/dashboard/*.sql
+Metric: total execution time in ms (lower is better)
+Verify: psql -f scripts/bench-queries.sql | grep "total_ms"
+```
+
+**Report template automation**
+```
+/autoresearch
+Goal: Standardize all weekly reports — consistent sections, KPI coverage, action items
+Scope: templates/reports/*.md
+Metric: template compliance score (higher is better)
+Verify: node scripts/report-template-audit.js
+```
+
+---
+
+### DevOps & Infrastructure
+
+**Dockerfile optimization**
+```
+/autoresearch
+Goal: Reduce Docker image size and build time
+Scope: Dockerfile, .dockerignore
+Metric: image size in MB (lower is better)
+Verify: docker build -t bench . 2>&1 && docker images bench --format "{{.Size}}"
+```
+
+**CI/CD pipeline speed**
+```
+/autoresearch
+Goal: Reduce CI pipeline duration from 12min to under 5min
+Scope: .github/workflows/*.yml
+Metric: pipeline duration in seconds (lower is better)
+Verify: node scripts/estimate-ci-time.js
+```
+
+**Terraform/IaC compliance**
+```
+/autoresearch
+Goal: Pass all tfsec security checks + reduce resource count
+Scope: infra/*.tf
+Metric: tfsec violations (lower is better)
+Verify: tfsec . --format json | jq '.results | length'
+```
+
+---
+
+### Design & Accessibility
+
+**Accessibility audit**
+```
+/autoresearch
+Goal: Reach WCAG 2.1 AA compliance — zero axe violations
+Scope: src/components/**/*.tsx
+Metric: axe violation count (lower is better)
+Verify: npx playwright test a11y.spec.ts | grep "violations"
+```
+
+**Design token consistency**
+```
+/autoresearch
+Goal: Replace all hardcoded colors/spacing with design tokens
+Scope: src/**/*.tsx, src/**/*.css
+Metric: hardcoded values count (lower is better)
+Verify: grep -rE "#[0-9a-fA-F]{3,6}|px\b" src/ --include="*.tsx" --include="*.css" | wc -l
+```
+
+---
+
+## Combining with MCP Servers
+
+Claude Code supports [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) servers, which give Claude access to external tools and APIs. When combined with autoresearch, this unlocks **real-time data-driven iteration loops**.
+
+### How It Works
+
+MCP servers expose tools that Claude can call during the autoresearch loop. Instead of just reading files and running scripts, Claude can:
+
+- **Query databases** to verify data changes
+- **Call APIs** to test integrations
+- **Fetch analytics** to measure real-world impact
+- **Interact with external services** as part of verification
+
+### Pattern: Database-Driven Iteration
+
+Use a PostgreSQL MCP server to iterate on query performance:
+
+```
+/autoresearch
+Goal: Optimize slow dashboard queries — reduce p95 query time
+Scope: queries/dashboard/*.sql
+Metric: avg query time in ms (lower is better)
+Verify: Use MCP postgres tool to run EXPLAIN ANALYZE on each query, sum total costs
+```
+
+Claude rewrites queries one at a time, uses the MCP Postgres tool to benchmark each change, and keeps only improvements.
+
+### Pattern: API Integration Testing
+
+Use an HTTP/API MCP server to verify endpoint behavior:
+
+```
+/autoresearch
+Goal: All API endpoints return valid JSON with correct status codes in <200ms
+Scope: src/api/**/*.ts
+Metric: endpoints passing all checks (higher is better)
+Verify: Use MCP HTTP tool to hit each endpoint, validate response schema + timing
+```
+
+### Pattern: Analytics-Driven Content Optimization
+
+Use a Google Analytics or Plausible MCP server:
+
+```
+/autoresearch
+Goal: Improve blog post structure based on engagement metrics
+Scope: content/blog/*.md
+Metric: avg time on page for modified posts (higher is better)
+Verify: Use MCP analytics tool to fetch page metrics, compare against baseline
+```
+
+### Pattern: CRM + Sales Automation
+
+Use a HubSpot/Salesforce MCP server:
+
+```
+/autoresearch
+Goal: Optimize email templates based on actual open/reply rates
+Scope: content/email-templates/*.md
+Metric: avg open rate from CRM data (higher is better)
+Verify: Use MCP CRM tool to pull latest campaign metrics for template variants
+```
+
+### Pattern: Cloud Infrastructure Monitoring
+
+Use an AWS/GCP MCP server:
+
+```
+/autoresearch
+Goal: Reduce Lambda cold start times across all functions
+Scope: src/lambdas/**/*.ts
+Metric: avg cold start time in ms (lower is better)
+Verify: Use MCP CloudWatch tool to query p95 cold start durations
+```
+
+### Pattern: GitHub Issue Triage
+
+Use the GitHub MCP server:
+
+```
+/autoresearch
+Goal: Auto-label and categorize 100+ open issues by type and priority
+Scope: scripts/issue-triage.js
+Metric: issues correctly labeled (higher is better)
+Verify: Use MCP GitHub tool to fetch issues, compare labels against rules
+```
+
+### Recommended MCP Servers for Autoresearch
+
+| MCP Server | Use Case | Metric Source |
+|---|---|---|
+| **PostgreSQL** | Query optimization, data validation | Query execution time, row counts |
+| **GitHub** | Issue triage, PR quality, CI status | Issue counts, check pass rates |
+| **Filesystem** | File organization, cleanup | File counts, directory depth |
+| **Puppeteer/Playwright** | Visual regression, performance | Lighthouse scores, screenshot diffs |
+| **Slack** | Notification quality, alert tuning | Message delivery, response times |
+| **Stripe** | Payment flow optimization | Checkout completion rates |
+| **Sentry** | Error reduction | Error count, crash-free rate |
+| **Cloudflare** | Edge performance | Cache hit rate, TTFB |
+
+---
+
+## Combining with APIs
+
+Beyond MCP, Claude can call APIs directly via scripts in the verification step. This enables real-world measurement loops.
+
+### Pattern: Lighthouse via API
+
+```javascript
+// scripts/lighthouse-score.js
+const { exec } = require('child_process');
+exec('npx lighthouse http://localhost:3000 --output json --quiet', (err, stdout) => {
+  const report = JSON.parse(stdout);
+  const perf = report.categories.performance.score * 100;
+  console.log(`SCORE: ${perf}`);
+  process.exit(perf > 0 ? 0 : 1);
+});
+```
+
+```
+/autoresearch
+Goal: Lighthouse performance score above 95
+Scope: src/components/**/*.tsx, src/app/**/*.tsx
+Metric: Lighthouse performance score (higher is better)
+Verify: node scripts/lighthouse-score.js
+```
+
+### Pattern: OpenAI/Anthropic API for Content Scoring
+
+Use an LLM API call as the verification step to score content quality:
+
+```javascript
+// scripts/content-quality-scorer.js
+const Anthropic = require('@anthropic-ai/sdk');
+const fs = require('fs');
+
+const content = fs.readFileSync(process.argv[2], 'utf-8');
+const client = new Anthropic();
+
+async function score() {
+  const msg = await client.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 100,
+    messages: [{ role: 'user', content: `Score this content 0-100 for clarity, engagement, and SEO. Return ONLY a number.\n\n${content}` }]
+  });
+  const score = parseInt(msg.content[0].text.trim());
+  console.log(`SCORE: ${score}`);
+  process.exit(0);
+}
+score();
+```
+
+```
+/autoresearch
+Goal: All blog posts score 80+ on AI-assessed quality
+Scope: content/blog/*.md
+Metric: quality score from Haiku (higher is better)
+Verify: node scripts/content-quality-scorer.js content/blog/latest.md
+```
+
+### Pattern: PageSpeed Insights API
+
+```javascript
+// scripts/pagespeed-score.js
+const https = require('https');
+const url = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${process.argv[2]}&key=${process.env.PSI_API_KEY}`;
+https.get(url, res => {
+  let data = '';
+  res.on('data', chunk => data += chunk);
+  res.on('end', () => {
+    const score = JSON.parse(data).lighthouseResult.categories.performance.score * 100;
+    console.log(`SCORE: ${score}`);
+  });
+});
+```
+
+### Pattern: Stripe Checkout Flow Testing
+
+```
+/autoresearch
+Goal: Reduce checkout page load time and increase Stripe test payment success rate
+Scope: src/checkout/**/*.tsx
+Metric: checkout flow success rate % (higher is better)
+Verify: node scripts/test-checkout-flow.js
+```
+
+### Pattern: Email Deliverability Scoring
+
+```
+/autoresearch
+Goal: Improve email deliverability — reduce spam score across all templates
+Scope: content/email-templates/*.html
+Metric: SpamAssassin score (lower is better)
+Verify: node scripts/spam-score.js content/email-templates/
+```
+
+---
+
 ## Claude Code Patterns
 
 ### Pattern 1: "Run Overnight"
@@ -626,6 +967,15 @@ A: No. Add `autoresearch-results.tsv` to `.gitignore`. It's a working file for t
 
 **Q: Can I review what Claude did?**
 A: Yes. Every kept change is a git commit with a descriptive message. Run `git log --oneline` to see the full history of experiments.
+
+**Q: Can I use MCP servers with autoresearch?**
+A: Yes. Any MCP server configured in your Claude Code environment is available during the loop. Claude can query databases, call APIs, fetch analytics, and interact with external services as part of the verification step. See the "Combining with MCP Servers" section above.
+
+**Q: Can I use an LLM API call as the verification metric?**
+A: Yes, but carefully. Use a fast, cheap model (like Haiku) for scoring. The verification must be deterministic-ish — same content should score similarly. Avoid using the same model that's making the changes to score them (confirmation bias). See the API patterns section for examples.
+
+**Q: What about rate limits when using APIs for verification?**
+A: Add a small delay in your verification script if needed. The loop is still fast — even with a 2-second API call, you get 1,800 iterations per hour. Most API rate limits won't be hit at this pace.
 
 ---
 
