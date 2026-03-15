@@ -5,7 +5,7 @@
 Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) — the principle that **constraint + mechanical metric + autonomous iteration = compounding gains**.
 
 [![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-blue?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code)
-[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Based on](https://img.shields.io/badge/Based_on-Karpathy's_Autoresearch-orange)](https://github.com/karpathy/autoresearch)
 
@@ -308,6 +308,215 @@ Launch now? → [Unlimited] [Bounded] [Copy only]
 | Want to validate before a long run | `/autoresearch:plan` — dry-run confirms it works |
 | Know exactly what you want | `/autoresearch` directly — skip the wizard |
 | Running overnight | `/autoresearch:plan` then launch — confidence before sleep |
+
+---
+
+## Autonomous Security Audit with `/autoresearch:security` (v1.0.3)
+
+Turn Claude into an autonomous security auditor that iteratively discovers vulnerabilities using **STRIDE threat modeling**, **OWASP Top 10 sweeps**, and **red-team adversarial analysis**.
+
+### Usage
+
+```
+# Unlimited — keep finding vulnerabilities until interrupted
+/autoresearch:security
+
+# Bounded — exactly 10 security sweep iterations
+/loop 10 /autoresearch:security
+
+# With focused scope
+/autoresearch:security
+Scope: src/api/**/*.ts, src/middleware/**/*.ts
+Focus: authentication and authorization flows
+```
+
+### How It Works
+
+Unlike standard autoresearch (which modifies code), `/autoresearch:security` is **read-only** — it analyzes code and reports findings without changing anything.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SETUP PHASE (once)                       │
+│                                                             │
+│  1. Codebase Recon     Scan tech stack, deps, configs       │
+│  2. Asset Inventory    Data stores, auth, APIs, inputs      │
+│  3. Trust Boundaries   Client↔Server, Public↔Auth, etc.     │
+│  4. STRIDE Model       Full threat model per asset+boundary │
+│  5. Attack Surface     Entry points, data flows, abuse paths│
+│  6. Baseline           Run npm audit / existing tools       │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                    AUTONOMOUS LOOP                          │
+│                                                             │
+│  LOOP (FOREVER or N times):                                 │
+│    1. Select untested attack vector from threat model       │
+│    2. Deep-dive into target code                            │
+│    3. Validate with code evidence (file:line + scenario)    │
+│    4. Classify: severity + OWASP category + STRIDE tag      │
+│    5. Log to security-audit-results.tsv                     │
+│    6. Print coverage summary every 5 iterations             │
+│    7. Repeat                                                │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                    STRUCTURED REPORT FOLDER                 │
+│                                                             │
+│  security/260315-0945-stride-owasp-full-audit/              │
+│  ├── overview.md              Executive summary + links     │
+│  ├── threat-model.md          STRIDE analysis + assets      │
+│  ├── attack-surface-map.md    Entry points + abuse paths    │
+│  ├── findings.md              All findings by severity      │
+│  ├── owasp-coverage.md        Coverage matrix per category  │
+│  ├── dependency-audit.md      npm/pip/go audit results      │
+│  ├── recommendations.md       Prioritized fixes + code      │
+│  └── security-audit-results.tsv  Iteration log             │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### STRIDE Threat Model
+
+The setup phase generates a full threat model using Microsoft's STRIDE framework:
+
+| Threat | Question | Example Findings |
+|--------|----------|------------------|
+| **S**poofing | Can an attacker impersonate a user/service? | Weak auth, missing CSRF, forged JWTs |
+| **T**ampering | Can data be modified in transit/at rest? | Missing validation, SQL injection |
+| **R**epudiation | Can actions be denied without evidence? | Missing audit logs, unsigned transactions |
+| **I**nfo Disclosure | Can sensitive data leak? | PII in logs, verbose errors, debug endpoints |
+| **D**enial of Service | Can the service be disrupted? | Missing rate limits, regex DoS |
+| **E**levation of Privilege | Can a user gain unauthorized access? | IDOR, broken access control, path traversal |
+
+### OWASP Top 10 Coverage
+
+Each iteration targets uncovered OWASP categories. Coverage is tracked and reported:
+
+| ID | Category | Checks |
+|----|----------|--------|
+| A01 | Broken Access Control | IDOR, missing auth middleware, privilege escalation |
+| A02 | Cryptographic Failures | Plaintext secrets, weak hashing, missing encryption |
+| A03 | Injection | SQL/NoSQL/command/XSS/template injection |
+| A04 | Insecure Design | Missing rate limits, race conditions, CSRF gaps |
+| A05 | Security Misconfiguration | Debug mode, default creds, missing headers |
+| A06 | Vulnerable Components | Known CVEs in dependencies |
+| A07 | Auth Failures | JWT flaws, session fixation, weak passwords |
+| A08 | Data Integrity Failures | Unsigned webhooks, insecure deserialization |
+| A09 | Logging Failures | Missing audit logs, sensitive data in logs |
+| A10 | SSRF | Unvalidated URLs, DNS rebinding |
+
+### Red-Team Adversarial Lenses
+
+Inspired by the `/plan red-team` workflow, the security audit adopts four hostile perspectives:
+
+| Persona | Mindset | Focus |
+|---------|---------|-------|
+| **Security Adversary** | "I'm a hacker breaching this system" | Auth bypass, injection, data exposure |
+| **Supply Chain Attacker** | "I'm compromising deps or CI/CD" | CVEs, typosquatting, unsigned artifacts |
+| **Insider Threat** | "I'm a malicious employee" | Privilege escalation, data exfiltration |
+| **Infrastructure Attacker** | "I'm attacking deployment, not code" | Container escape, exposed services, env vars |
+
+### Coverage Summary (Every 5 Iterations)
+
+```
+=== Security Audit Progress (iteration 10) ===
+STRIDE Coverage: S[✓] T[✓] R[✗] I[✓] D[✓] E[✓] — 5/6
+OWASP Coverage: A01[✓] A02[✗] A03[✓] A04[✗] A05[✓] A06[✓] A07[✓] A08[✗] A09[✗] A10[✗] — 5/10
+Findings: 4 Critical, 2 High, 3 Medium, 1 Low
+Confirmed: 7 | Likely: 2 | Possible: 1
+```
+
+### Example Session
+
+```
+> /loop 10 /autoresearch:security
+
+[Setup] Scanning codebase...
+  Tech stack: Next.js 16, TypeScript, MongoDB, JWT auth
+  Assets: 3 data stores, 14 API routes, 2 external services
+  Trust boundaries: 4 identified
+  STRIDE threats: 18 modeled
+  Attack vectors: 22 mapped
+  Baseline: 3 npm audit warnings
+
+[Iteration 1] Testing: IDOR on /api/users/:id
+  → CONFIRMED HIGH (A01/EoP) — src/api/users.ts:42
+    GET /api/users/:id returns any user data without ownership check
+
+[Iteration 2] Testing: JWT validation
+  → CONFIRMED CRITICAL (A07/Spoofing) — src/middleware/auth.ts:18
+    JWT secret from env but no algorithm restriction — "none" algorithm accepted
+
+[Iteration 3] Testing: Rate limiting on /api/auth/login
+  → CONFIRMED MEDIUM (A04/DoS) — src/api/auth.ts:15
+    No rate limiting on login endpoint — brute force possible
+
+...
+
+=== Security Audit Complete (10/10 iterations) ===
+STRIDE Coverage: S[✓] T[✓] R[✗] I[✓] D[✓] E[✓] — 5/6
+OWASP Coverage: A01[✓] A02[✓] A03[✓] A04[✓] A05[✓] A06[✓] A07[✓] A08[✗] A09[✗] A10[✗] — 7/10
+Findings: 2 Critical, 3 High, 4 Medium, 1 Low
+
+Report saved to:
+  security/260315-0945-stride-owasp-full-audit/
+  ├── overview.md           ← Start here
+  ├── threat-model.md
+  ├── attack-surface-map.md
+  ├── findings.md
+  ├── owasp-coverage.md
+  ├── dependency-audit.md
+  ├── recommendations.md
+  └── security-audit-results.tsv
+```
+
+### Proof-of-Concept Validation (Inspired by Strix)
+
+Every finding requires **code evidence** — no theoretical fluff:
+
+```markdown
+### [CRITICAL] Finding: JWT Algorithm Confusion
+- **OWASP:** A07 — Auth Failures
+- **STRIDE:** Spoofing
+- **Location:** `src/middleware/auth.ts:18`
+- **Confidence:** Confirmed
+- **Attack Scenario:**
+  1. Attacker crafts JWT with `"alg": "none"`
+  2. Server accepts token without signature verification
+  3. Attacker gains access as any user
+- **Code Evidence:**
+  ```typescript
+  // Line 18 — no algorithm restriction
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  ```
+- **Mitigation:**
+  ```typescript
+  const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+    algorithms: ['HS256'] // Explicitly restrict algorithms
+  });
+  ```
+```
+
+### Metric
+
+The loop uses a composite coverage + findings metric:
+
+```
+metric = (owasp_tested/10)*50 + (stride_tested/6)*30 + min(findings, 20)
+```
+
+- **Direction:** higher is better (more coverage + more findings = more thorough)
+- **Max theoretical:** 100
+- Incentivizes covering ALL categories before going deep on any one
+
+### When to Use
+
+| Scenario | Recommendation |
+|----------|---------------|
+| Before a major release | `/loop 15 /autoresearch:security` |
+| Quick sanity check | `/loop 5 /autoresearch:security` |
+| Comprehensive overnight audit | `/autoresearch:security` (unlimited) |
+| CI/CD security gate | `/loop 10 /autoresearch:security` |
+| After adding auth/API changes | `/autoresearch:security` with scoped focus |
+| Compliance preparation | `/loop 20 /autoresearch:security` (max coverage) |
 
 ---
 
@@ -1206,6 +1415,7 @@ autoresearch/
             ├── autonomous-loop-protocol.md            ← Detailed 8-phase loop protocol
             ├── core-principles.md                     ← 7 universal principles
             ├── plan-workflow.md                        ← /autoresearch:plan wizard protocol
+            ├── security-workflow.md                   ← /autoresearch:security audit protocol
             └── results-logging.md                     ← TSV tracking format + reporting
 ```
 
@@ -1238,6 +1448,15 @@ The meta-principle:
 
 **Q: I don't know what metric or verify command to use. How do I get started?**
 A: Run `/autoresearch:plan` — the planning wizard analyzes your codebase, suggests metrics based on your tooling, constructs a verify command, and dry-runs it before you launch. It's the easiest way to get started.
+
+**Q: Can autoresearch do security audits?**
+A: Yes! Run `/autoresearch:security` (or `/loop 10 /autoresearch:security` for bounded). It generates a full STRIDE threat model, maps attack surfaces, then iteratively tests each vulnerability vector with code evidence. Reports findings ranked by severity with OWASP Top 10 mapping and concrete mitigations. It's read-only — analyzes code without modifying it.
+
+**Q: Does /autoresearch:security actually modify my code?**
+A: No. Unlike standard `/autoresearch` which modifies and tests code, `/autoresearch:security` is **read-only**. It analyzes your codebase and produces a structured report folder at `security/{date}-{time}-{slug}/` with 7 markdown files covering threat model, findings, OWASP coverage, dependency audit, and prioritized recommendations. It does not fix vulnerabilities — that's your decision.
+
+**Q: Where are the security reports saved?**
+A: Each run creates a timestamped folder inside `security/` at your project root — e.g., `security/260315-0945-stride-owasp-full-audit/`. Start reading at `overview.md` which links to all other files. Reports are designed to be committed and shared with your team.
 
 **Q: Does this work with any Claude Code project?**
 A: Yes. Copy the skill to `.claude/skills/autoresearch/` in any project. It works with any language, framework, or domain.

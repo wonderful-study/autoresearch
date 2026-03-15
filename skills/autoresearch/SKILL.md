@@ -1,7 +1,7 @@
 ---
 name: autoresearch
 description: Autonomous Goal-directed Iteration. Apply Karpathy's autoresearch principles to ANY task. Loops autonomously — modify, verify, keep/discard, repeat. Supports optional loop count via Claude Code's /loop command.
-version: 1.0.2
+version: 1.0.3
 ---
 
 # Claude Autoresearch — Autonomous Goal-directed Iteration
@@ -16,6 +16,51 @@ Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
 |------------|---------|
 | `/autoresearch` | Run the autonomous loop (default) |
 | `/autoresearch:plan` | Interactive wizard to build Scope, Metric, Direction & Verify from a Goal |
+| `/autoresearch:security` | Autonomous security audit with STRIDE threat model + OWASP Top 10 sweep |
+
+### /autoresearch:security — Autonomous Security Audit (v1.0.3)
+
+Runs a comprehensive security audit using the autoresearch loop pattern. Generates a full STRIDE threat model, maps attack surfaces, then iteratively tests each vulnerability vector — logging findings with severity, OWASP category, and code evidence.
+
+Load: `references/security-workflow.md` for full protocol.
+
+**What it does:**
+
+1. **Codebase Reconnaissance** — scans tech stack, dependencies, configs, API routes
+2. **Asset Identification** — catalogs data stores, auth systems, external services, user inputs
+3. **Trust Boundary Mapping** — browser↔server, public↔authenticated, user↔admin, CI/CD↔prod
+4. **STRIDE Threat Model** — Spoofing, Tampering, Repudiation, Info Disclosure, DoS, Elevation of Privilege
+5. **Attack Surface Map** — entry points, data flows, abuse paths
+6. **Autonomous Loop** — iteratively tests each vector, validates with code evidence, logs findings
+7. **Final Report** — severity-ranked findings with mitigations, coverage matrix, iteration log
+
+**Key behaviors:**
+- Follows red-team adversarial mindset (Security Adversary, Supply Chain, Insider Threat, Infra Attacker)
+- Every finding requires **code evidence** (file:line + attack scenario) — no theoretical fluff
+- Tracks OWASP Top 10 + STRIDE coverage, prints coverage summary every 5 iterations
+- Composite metric: `(owasp_tested/10)*50 + (stride_tested/6)*30 + min(findings, 20)` — higher is better
+- Creates `security/{YYMMDD}-{HHMM}-{audit-slug}/` folder with structured reports:
+  `overview.md`, `threat-model.md`, `attack-surface-map.md`, `findings.md`, `owasp-coverage.md`, `dependency-audit.md`, `recommendations.md`, `security-audit-results.tsv`
+
+**Usage:**
+```
+# Unlimited — keep finding vulnerabilities until interrupted
+/autoresearch:security
+
+# Bounded — exactly 10 security sweep iterations
+/loop 10 /autoresearch:security
+
+# With focused scope
+/autoresearch:security
+Scope: src/api/**/*.ts, src/middleware/**/*.ts
+Focus: authentication and authorization flows
+```
+
+**Inspired by:**
+- [Strix](https://github.com/usestrix/strix) — AI-powered security testing with proof-of-concept validation
+- `/plan red-team` — adversarial review with hostile reviewer personas
+- OWASP Top 10 (2021) — industry-standard vulnerability taxonomy
+- STRIDE — Microsoft's threat modeling framework
 
 ### /autoresearch:plan — Goal → Configuration Wizard
 
@@ -54,7 +99,9 @@ After the wizard completes, the user gets a ready-to-paste `/autoresearch` invoc
 
 - User invokes `/autoresearch` or `/ug:autoresearch` → run the loop
 - User invokes `/autoresearch:plan` → run the planning wizard
+- User invokes `/autoresearch:security` → run the security audit
 - User says "help me set up autoresearch", "plan an autoresearch run" → run the planning wizard
+- User says "security audit", "threat model", "OWASP", "STRIDE", "find vulnerabilities", "red-team" → run the security audit
 - User says "work autonomously", "iterate until done", "keep improving", "run overnight" → run the loop
 - Any task requiring repeated iteration cycles with measurable outcomes → run the loop
 
@@ -157,5 +204,6 @@ See `references/core-principles.md` for the 7 generalizable principles from auto
 | Blog/content | Word count + readability | `content/*.md` | Custom script |
 | Performance | Benchmark time (ms) | Target files | `npm run bench` |
 | Refactoring | Tests pass + LOC reduced | Target module | `npm test && wc -l` |
+| Security | OWASP + STRIDE coverage + findings | API/auth/middleware | `/autoresearch:security` |
 
 Adapt the loop to your domain. The PRINCIPLES are universal; the METRICS are domain-specific.
