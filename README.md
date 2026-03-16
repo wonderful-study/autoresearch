@@ -7,7 +7,7 @@
 Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) — constraint + mechanical metric + autonomous iteration = compounding gains.
 
 [![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-blue?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code)
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Based on](https://img.shields.io/badge/Based_on-Karpathy's_Autoresearch-orange)](https://github.com/karpathy/autoresearch)
 
@@ -99,6 +99,26 @@ Before looping, Claude performs a one-time setup:
 ## Quick Start
 
 ### 1. Install
+
+**Option A — Plugin install (recommended):**
+
+```bash
+/plugin install autoresearch@autoresearch
+```
+
+Or add to your `settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "autoresearch": {
+      "source": { "source": "git", "url": "https://github.com/uditgoenka/autoresearch.git" }
+    }
+  }
+}
+```
+
+**Option B — Manual copy:**
 
 ```bash
 git clone https://github.com/uditgoenka/autoresearch.git
@@ -247,6 +267,9 @@ autoresearch/
 ├── README.md
 ├── EXAMPLES.md                                    ← Real-world examples by domain
 ├── LICENSE
+├── .claude-plugin/
+│   ├── marketplace.json                           ← Plugin marketplace manifest
+│   └── plugin.json                                ← Plugin metadata
 ├── commands/
 │   └── autoresearch/
 │       ├── ship.md                                ← /autoresearch:ship registration
