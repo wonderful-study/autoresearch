@@ -87,15 +87,17 @@ else
   sed -i "s/\"version\": \"$CURRENT\"/\"version\": \"$VERSION\"/" "$PLUGIN_JSON"
 fi
 
-# --- Bump version badge in README.md ---
-if grep -q "version-.*-blue" README.md; then
-  echo "    Updating version badge in README.md"
-  if [[ "$(uname)" == "Darwin" ]]; then
-    sed -i '' "s/version-[0-9]*\.[0-9]*\.[0-9]*-blue/version-${VERSION}-blue/" README.md
-  else
-    sed -i "s/version-[0-9]*\.[0-9]*\.[0-9]*-blue/version-${VERSION}-blue/" README.md
+# --- Bump version badges in README.md and GUIDE.md ---
+for DOC_FILE in README.md GUIDE.md; do
+  if [[ -f "$DOC_FILE" ]] && grep -q "version-.*-blue" "$DOC_FILE"; then
+    echo "    Updating version badge in $DOC_FILE"
+    if [[ "$(uname)" == "Darwin" ]]; then
+      sed -i '' "s/version-[0-9]*\.[0-9]*\.[0-9]*-blue/version-${VERSION}-blue/" "$DOC_FILE"
+    else
+      sed -i "s/version-[0-9]*\.[0-9]*\.[0-9]*-blue/version-${VERSION}-blue/" "$DOC_FILE"
+    fi
   fi
-fi
+done
 
 # --- Doc review prompt ---
 echo ""
@@ -103,8 +105,10 @@ echo "[3/6] Documentation review"
 echo "────────────────────────────────────────"
 echo "  Before continuing, review these files for accuracy:"
 echo ""
-echo "  README.md    — version refs, command table, feature descriptions"
-echo "  EXAMPLES.md  — version tags in headers, new command examples"
+echo "  README.md        — version refs, command table, feature descriptions"
+echo "  GUIDE.md         — version badge, command reference, domain scenarios, chains"
+echo "  EXAMPLES.md      — version tags in headers, new command examples"
+echo "  CONTRIBUTING.md  — repo structure, file table, sub-command steps"
 echo ""
 
 # Show what changed since last tag
@@ -115,16 +119,16 @@ if [[ -n "$LAST_TAG" ]]; then
   echo ""
 fi
 
-echo "  If README.md or EXAMPLES.md need updates, edit them now"
+echo "  If any docs need updates, edit them now"
 echo "  in another terminal, then come back here and continue."
 echo ""
 read -rp "  Press ENTER when docs are ready (or 'skip' to continue as-is): " DOC_RESPONSE
 
 if [[ "$DOC_RESPONSE" != "skip" ]]; then
   # Check if README or EXAMPLES were modified
-  if [[ -n "$(git status --porcelain -- README.md EXAMPLES.md)" ]]; then
+  if [[ -n "$(git status --porcelain -- README.md GUIDE.md EXAMPLES.md CONTRIBUTING.md)" ]]; then
     echo "    Staging doc updates..."
-    git add README.md EXAMPLES.md 2>/dev/null || true
+    git add README.md GUIDE.md EXAMPLES.md CONTRIBUTING.md 2>/dev/null || true
   fi
 fi
 
@@ -169,8 +173,11 @@ ${CHANGELOG:-"No previous tag found — initial release."}
 ### Checklist
 - [x] plugin.json version bumped to $VERSION
 - [x] README.md version badge updated
+- [x] GUIDE.md version badge updated
 - [ ] README.md content reviewed for accuracy
+- [ ] GUIDE.md reviewed — command reference, domains, chains
 - [ ] EXAMPLES.md reviewed — new commands/features documented
+- [ ] CONTRIBUTING.md reviewed — repo structure, file table
 - [ ] All tests passing
 
 ### Files changed

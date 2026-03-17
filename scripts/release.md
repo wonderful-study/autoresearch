@@ -25,9 +25,10 @@
 [2/6] Bump versions:
       → .claude-plugin/plugin.json  (version field)
       → README.md                   (version badge)
+      → GUIDE.md                    (version badge)
 [3/6] Pause for doc review:
       → Shows changelog since last tag
-      → Prompts you to review README.md and EXAMPLES.md
+      → Prompts you to review README.md, GUIDE.md, EXAMPLES.md, CONTRIBUTING.md
       → You can edit in another terminal, then continue
 [4/6] Commit all release changes
 [5/6] Push branch + create PR against master
@@ -57,16 +58,29 @@ At step [3/6], the script pauses and shows the changelog. Review these files:
 - **Repository Structure** — new files in the tree?
 - **FAQ** — new questions from issues/discussions?
 
+### GUIDE.md
+- **Version badge** (must match release version)
+- **Command Reference** — any new commands or flags?
+- **Domain Scenarios** — new domain examples to add?
+- **Command Chains** — new chain patterns possible?
+- **Metric Cheat Sheet** — new verify commands to add?
+
 ### EXAMPLES.md
 - **Version tags in headers** — e.g., `(v1.7.0)` for new features
 - **New command examples** — did you add a new `/autoresearch:*` command?
 - **New domain examples** — any real-world examples to add?
 - **Flag documentation** — new flags for existing commands?
 
+### CONTRIBUTING.md
+- **Repository Structure** — does the tree reflect new files?
+- **What Each File Does** — any new files to document?
+- **Adding a New Sub-Command** — steps still accurate?
+- **High-Value Contributions** — new contribution types?
+
 ### Tips
 - Edit docs in another terminal while the script is paused
 - Type `skip` at the prompt to continue without doc changes
-- The script stages any README.md / EXAMPLES.md changes automatically
+- The script stages any doc changes automatically (README.md, GUIDE.md, EXAMPLES.md, CONTRIBUTING.md)
 
 ## Abort and Resume
 

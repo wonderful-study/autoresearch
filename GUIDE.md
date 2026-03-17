@@ -6,7 +6,7 @@
 
 *Everything you need to master autonomous iteration — from first run to advanced multi-command chains.*
 
-[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
+[![Version](https://img.shields.io/badge/version-1.6.2-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
