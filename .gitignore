@@ -2,13 +2,8 @@
 .DS_Store
 Thumbs.db
 
-# Claude Code local state
-.claude/agents/
-.claude/hooks/
-.claude/metadata.json
-.claude/rules/
-.claude/skills/*
-!.claude/skills/autoresearch/
+# Codex local state
+.codex/
 
 # Debug/temp files
 autoresearch-debug-fix-results.tsv

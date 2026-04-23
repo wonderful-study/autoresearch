@@ -9,7 +9,7 @@ Converts a plain-language goal into a validated, ready-to-execute autoresearch c
 Running `/autoresearch` directly requires three inputs: **Scope**, **Metric**, and **Verify**. Getting these wrong wastes entire runs:
 
 - **Scope too wide** — fixes wrong files, slow iteration
-- **Metric not mechanical** — Claude can't measure progress, loop stalls
+- **Metric not mechanical** — Codex can't measure progress, loop stalls
 - **Verify command broken** — every iteration fails, nothing lands
 - **Direction wrong** — higher/lower confusion means the loop optimizes backward
 
@@ -50,7 +50,7 @@ If any gate fails, the wizard explains why and suggests a corrected command.
 ## Usage
 
 ```
-# Interactive — Claude asks for your goal
+# Interactive — Codex asks for your goal
 /autoresearch:plan
 
 # Inline goal

@@ -38,8 +38,7 @@ fi
 VERSION="${VERSION#v}"
 TAG="v${VERSION}"
 BRANCH="release/${VERSION}"
-PLUGIN_JSON="claude-plugin/.claude-plugin/plugin.json"
-MARKETPLACE_JSON=".claude-plugin/marketplace.json"
+PLUGIN_JSON="plugins/autoresearch/.codex-plugin/plugin.json"
 
 # --- Preflight checks ---
 if [[ ! -f "$PLUGIN_JSON" ]]; then
@@ -86,39 +85,12 @@ echo ""
 echo "[1/7] Creating release branch: $BRANCH"
 git checkout -b "$BRANCH"
 
-# --- Bump version in plugin.json and marketplace.json ---
-echo "[2/7] Bumping versions: $CURRENT → $VERSION"
-for JSON_FILE in "$PLUGIN_JSON" "$MARKETPLACE_JSON"; do
-  if [[ -f "$JSON_FILE" ]]; then
-    echo "    Updating $JSON_FILE"
-    if [[ "$(uname)" == "Darwin" ]]; then
-      sed -i '' "s/\"version\": \"$CURRENT\"/\"version\": \"$VERSION\"/g" "$JSON_FILE"
-    else
-      sed -i "s/\"version\": \"$CURRENT\"/\"version\": \"$VERSION\"/g" "$JSON_FILE"
-    fi
-  fi
-done
-
-# --- Bump version in distribution SKILL.md ---
-DIST_SKILL="claude-plugin/skills/autoresearch/SKILL.md"
-if [[ -f "$DIST_SKILL" ]] && grep -q "^version:" "$DIST_SKILL"; then
-  echo "    Updating $DIST_SKILL"
-  if [[ "$(uname)" == "Darwin" ]]; then
-    sed -i '' "s/^version: .*/version: $VERSION/" "$DIST_SKILL"
-  else
-    sed -i "s/^version: .*/version: $VERSION/" "$DIST_SKILL"
-  fi
-fi
-
-# --- Bump version in SKILL.md frontmatter ---
-SKILL_FILE=".claude/skills/autoresearch/SKILL.md"
-if [[ -f "$SKILL_FILE" ]] && grep -q "^version:" "$SKILL_FILE"; then
-  echo "    Updating $SKILL_FILE"
-  if [[ "$(uname)" == "Darwin" ]]; then
-    sed -i '' "s/^version: .*/version: $VERSION/" "$SKILL_FILE"
-  else
-    sed -i "s/^version: .*/version: $VERSION/" "$SKILL_FILE"
-  fi
+# --- Bump version in plugin.json ---
+echo "[2/7] Bumping plugin version: $CURRENT → $VERSION"
+if [[ "$(uname)" == "Darwin" ]]; then
+  sed -i '' "s/\"version\": \"$CURRENT\"/\"version\": \"$VERSION\"/g" "$PLUGIN_JSON"
+else
+  sed -i "s/\"version\": \"$CURRENT\"/\"version\": \"$VERSION\"/g" "$PLUGIN_JSON"
 fi
 
 # --- Bump version badges in README.md and guide/README.md ---
@@ -133,18 +105,14 @@ for DOC_FILE in README.md guide/README.md; do
   fi
 done
 
-# --- Sync distribution files from .claude/ to claude-plugin/ ---
+# --- Compatibility scan ---
 echo ""
-echo "[3/7] Syncing distribution files to claude-plugin/"
-if [[ -d ".claude/commands/autoresearch" ]]; then
-  cp .claude/commands/autoresearch.md claude-plugin/commands/autoresearch.md
-  cp .claude/commands/autoresearch/*.md claude-plugin/commands/autoresearch/
-  echo "    Synced claude-plugin/commands/autoresearch/"
-fi
-if [[ -d ".claude/skills/autoresearch" ]]; then
-  cp .claude/skills/autoresearch/SKILL.md claude-plugin/skills/autoresearch/SKILL.md
-  cp .claude/skills/autoresearch/references/*.md claude-plugin/skills/autoresearch/references/
-  echo "    Synced claude-plugin/skills/autoresearch/"
+echo "[3/7] Running Codex compatibility scan"
+if rg -n "AskUserQuestion|ToolSearch|\\.claude/|\\.claude-plugin|Claude Code" \
+  README.md CONTRIBUTING.md guide/ COMPARISON.md plugins/autoresearch/ >/tmp/autoresearch-release-scan.txt 2>/dev/null; then
+  echo "Error: Codex compatibility scan found Claude-specific leftovers:"
+  cat /tmp/autoresearch-release-scan.txt
+  exit 1
 fi
 
 # --- Doc review prompt ---
@@ -153,10 +121,11 @@ echo "[4/7] Documentation review"
 echo "────────────────────────────────────────"
 echo "  Before continuing, review these files for accuracy:"
 echo ""
-echo "  README.md        — version refs, command table, feature descriptions"
+echo "  README.md        — install flow, command table, repo structure"
 echo "  guide/           — individual command guides, examples, advanced patterns"
-echo "  guide/scenario/  — scenario guide, domain examples, edge case patterns"
 echo "  CONTRIBUTING.md  — repo structure, file table, sub-command steps"
+echo "  plugins/autoresearch/README.md — plugin usage notes"
+echo "  .agents/plugins/marketplace.json — repo-local marketplace entry"
 echo "  COMPARISON.md    — subcommand count, feature comparison table"
 echo ""
 
@@ -221,13 +190,14 @@ ${CHANGELOG:-"No previous tag found — initial release."}
 
 ### Checklist
 - [x] plugin.json version bumped to $VERSION
-- [x] marketplace.json version bumped to $VERSION
 - [x] README.md version badge updated
 - [x] guide/README.md version badge updated
+- [x] Codex compatibility scan passes
 - [ ] README.md content reviewed for accuracy
 - [ ] guide/ reviewed — command guides, examples, chains
-- [ ] guide/scenario/ reviewed — scenario guides, domain examples
 - [ ] CONTRIBUTING.md reviewed — repo structure, file table
+- [ ] plugins/autoresearch/README.md reviewed
+- [ ] .agents/plugins/marketplace.json reviewed
 - [ ] COMPARISON.md reviewed — subcommand count, feature table
 - [ ] All tests passing
 

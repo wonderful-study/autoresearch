@@ -6,9 +6,9 @@
 
 ## The Problem
 
-Every other autoresearch command starts with a single perspective. Claude reads the code, forms one hypothesis, and begins testing it. If that first instinct is wrong — and for hard problems, it usually is — you spend the next 5–15 iterations chasing dead ends before stumbling onto the real cause.
+Every other autoresearch command starts with a single perspective. Codex reads the code, forms one hypothesis, and begins testing it. If that first instinct is wrong — and for hard problems, it usually is — you spend the next 5–15 iterations chasing dead ends before stumbling onto the real cause.
 
-This is not a Claude limitation. It is a fundamental problem with single-perspective serial analysis:
+This is not a Codex limitation. It is a fundamental problem with single-perspective serial analysis:
 
 - **Cognitive anchoring** — the first plausible hypothesis crowds out better alternatives
 - **Domain blindness** — a debugging lens misses security implications; a security lens misses performance degradation
@@ -62,11 +62,11 @@ Phase 8: Handoff        — Write handoff.json, trigger --chain if set
 
 ### Phase 1: Setup
 
-Parses flags and inline config. Resolves scope globs to actual file lists — if no files match, stops and asks. Maps `--depth` preset to persona count and round count. Validates `--chain` targets. If invoked without scope, goal, and depth all provided, triggers interactive setup questions via `AskUserQuestion` before proceeding.
+Parses flags and inline config. Resolves scope globs to actual file lists — if no files match, stops and asks. Maps `--depth` preset to persona count and round count. Validates `--chain` targets. If invoked without scope, goal, and depth all provided, triggers direct follow-up questions before proceeding.
 
 ### Phase 2: Reconnaissance
 
-Claude reads all in-scope source files and writes three structured knowledge files. These files act as the shared context for all personas — preventing redundant re-reading and ensuring every persona analyzes from identical facts.
+Codex reads all in-scope source files and writes three structured knowledge files. These files act as the shared context for all personas — preventing redundant re-reading and ensuring every persona analyzes from identical facts.
 
 **Knowledge files built:**
 - `codebase-analysis.md` — functions, classes, routes, models with file:line references
@@ -158,11 +158,11 @@ Writes `handoff.json` — a machine-readable schema consumed by downstream chain
 
 ## File-Based Knowledge Representation
 
-Predict's knowledge graph is built from plain `.md` files. No external databases, vector stores, or graph engines. Claude's native `Read`, `Grep`, and `Glob` tools are the query engine.
+Predict's knowledge graph is built from plain `.md` files. No external databases, vector stores, or graph engines. Codex's native `Read`, `Grep`, and `Glob` tools are the query engine.
 
 This is a deliberate architectural choice:
 
-- **Zero external dependencies** — works in any environment where Claude can read files
+- **Zero external dependencies** — works in any environment where Codex can read files
 - **Human-readable** — engineers can inspect the knowledge files directly
 - **Auditable** — every finding traces back to a specific file:line in a knowledge file
 - **Incrementally updateable** — git diff tells predict exactly what changed
@@ -398,7 +398,7 @@ Scope: src/api/**/*.ts
 Goal: Investigate intermittent 500 errors on POST /users
 ```
 
-Without predict: Claude guesses → tests → wrong → guesses again → 10 iterations.
+Without predict: Codex guesses → tests → wrong → guesses again → 10 iterations.
 With predict: 5 experts debate → ranked hypotheses → debug tests in order → 2–3 iterations.
 
 The Debug loop receives a pre-ranked hypothesis queue and tests them in order. If H-01 (connection pool exhaustion at high concurrency) is disproven empirically, it moves to H-02 (missing error handling in async middleware), and so on. Each iteration is purposeful — no wasted guesses.

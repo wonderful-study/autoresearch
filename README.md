@@ -1,12 +1,12 @@
 <div align="center">
 
-# Claude Autoresearch
+# Codex Autoresearch
 
-**Turn [Claude Code](https://docs.anthropic.com/en/docs/claude-code) into a relentless improvement engine.**
+**Turn [Codex CLI](https://developers.openai.com/codex/plugins) into a relentless improvement engine.**
 
 Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) — constraint + mechanical metric + autonomous iteration = compounding gains.
 
-[![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-blue?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code)
+[![Codex CLI Plugin](https://img.shields.io/badge/Codex_CLI-Plugin-0B5FFF.svg)](https://developers.openai.com/codex/plugins)
 [![Version](https://img.shields.io/badge/version-1.9.0-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -16,13 +16,13 @@ Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) —
 
 <br>
 
-*"Set the GOAL → Claude runs the LOOP → You wake up to results"*
+*"Set the GOAL → Codex runs the LOOP → You wake up to results"*
 
 *You don't need AGI. You need a goal, a metric, and a loop that never quits.*
 
 <br>
 
-[How It Works](#how-it-works) · [Commands](#commands) · [Quick Start](#quick-start) · [Guides](guide/) · [FAQ](#faq)
+[How It Works](#how-it-works) · [Commands](#commands) · [Quick Start](#quick-start) · [Guides](guide/) · [中文指南](README.zh-CN.md) · [FAQ](#faq)
 
 </div>
 
@@ -32,7 +32,7 @@ Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) —
 
 [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) demonstrated that a 630-line Python script could autonomously improve ML models overnight — **100 experiments per night** — by following simple principles: one metric, constrained scope, fast verification, automatic rollback, git as memory.
 
-**Claude Autoresearch generalizes these principles to ANY domain.** Not just ML — code, content, marketing, sales, HR, DevOps, or anything with a number you can measure.
+**Codex Autoresearch generalizes these principles to ANY domain.** Not just ML — code, content, marketing, sales, HR, DevOps, or anything with a number you can measure.
 
 ---
 
@@ -54,7 +54,7 @@ Every improvement stacks. Every failure auto-reverts. Progress is logged in TSV 
 
 ### The Setup Phase
 
-Before looping, Claude performs a one-time setup:
+Before looping, the agent performs a one-time setup:
 
 1. **Read context** — reads all in-scope files
 2. **Define goal** — extracts or asks for a mechanical metric
@@ -94,7 +94,7 @@ Before looping, Claude performs a one-time setup:
 | `/autoresearch:reason` | Adversarial refinement — blind judge panel converges subjective content through isolated multi-agent debate |
 | `Guard: <command>` | Optional safety net — must pass for changes to be kept |
 
-**All commands use `AskUserQuestion` for interactive setup when invoked without arguments.** Just type the command — Claude will ask you what you need step by step with smart defaults based on your codebase. Power users can skip the wizard by providing flags inline.
+**All commands fall back to direct follow-up questions when required context is missing.** Codex inspects the repo first, then asks for only the missing fields. Power users can skip the follow-up by providing flags inline.
 
 ### Quick Decision Guide
 
@@ -127,43 +127,24 @@ Before looping, Claude performs a one-time setup:
 
 ### 1. Install
 
-**Option A — Plugin install (recommended):**
+**Option A — Repo-local plugin install (recommended):**
 
-In Claude Code, run:
-```
-/plugin marketplace add uditgoenka/autoresearch
-/plugin install autoresearch@autoresearch
-```
+1. Open Codex CLI in this repository.
+2. Run `/plugins`.
+3. Install the `autoresearch` plugin from this repo's marketplace entry in `.agents/plugins/marketplace.json`.
 
-That's it. All 10 commands are available after restarting Claude Code.
+That gives you all 10 slash commands plus 10 explicit skills in this repo.
 
-> **Note:** Start a new Claude Code session after installing. Reference files aren't resolvable in the same session where installation happened — this is a Claude Code platform limitation.
-
-**Updating (no reinstall needed):**
-```
-/plugin update autoresearch
-```
-
-That pulls the latest version. Run `/reload-plugins` to activate. No need to uninstall or re-clone.
-
-**Option B — Manual copy:**
+**Option B — Home-local plugin install:**
 ```bash
 git clone https://github.com/uditgoenka/autoresearch.git
 
-# Copy skill + subcommands to your project
-cp -r autoresearch/claude-plugin/skills/autoresearch .claude/skills/autoresearch
-cp -r autoresearch/claude-plugin/commands/autoresearch .claude/commands/autoresearch
-cp autoresearch/claude-plugin/commands/autoresearch.md .claude/commands/autoresearch.md
+mkdir -p ~/plugins ~/.agents/plugins
+cp -R autoresearch/plugins/autoresearch ~/plugins/autoresearch
+cp autoresearch/.agents/plugins/marketplace.json ~/.agents/plugins/marketplace.json
 ```
 
-Or install globally:
-```bash
-cp -r autoresearch/claude-plugin/skills/autoresearch ~/.claude/skills/autoresearch
-cp -r autoresearch/claude-plugin/commands/autoresearch ~/.claude/commands/autoresearch
-cp autoresearch/claude-plugin/commands/autoresearch.md ~/.claude/commands/autoresearch.md
-```
-
-> **Note:** The `commands/` directory is required for subcommands (`/autoresearch:ship`, `/autoresearch:plan`, `/autoresearch:security`) to work.
+If you already maintain `~/.agents/plugins/marketplace.json`, merge the `autoresearch` entry instead of overwriting the whole file.
 
 ### 2. Run It
 
@@ -177,7 +158,7 @@ Verify: npm test -- --coverage | grep "All files"
 
 ### 3. Walk Away
 
-Claude reads all files, establishes a baseline, and starts iterating — one change at a time. Keep improvements, auto-revert failures, log everything. **Never stops until you interrupt** (or N iterations complete).
+Codex reads all files, establishes a baseline, and starts iterating — one change at a time. Keep improvements, auto-revert failures, log everything. **Never stops until you interrupt** (or N iterations complete).
 
 ---
 
@@ -382,7 +363,7 @@ Guard: npm test
 - **Verify** = "Did the metric improve?" (the goal)
 - **Guard** = "Did anything else break?" (the safety net)
 
-If the metric improves but the guard fails, Claude reworks the optimization (up to 2 attempts). Guard/test files are never modified.
+If the metric improves but the guard fails, Codex reworks the optimization (up to 2 attempts). Guard/test files are never modified.
 
 > **Credit:** Guard was contributed by [@pronskiy](https://github.com/pronskiy) (JetBrains) in [PR #7](https://github.com/uditgoenka/autoresearch/pull/7).
 
@@ -400,7 +381,7 @@ iteration  commit   metric  delta   status    description
 3          c3d4e5f  88.3    +1.2    keep      add error handling tests
 ```
 
-Every 10 iterations, Claude prints a progress summary. Bounded loops print a final summary with baseline → current best.
+Every 10 iterations, Codex prints a progress summary. Bounded loops print a final summary with baseline → current best.
 
 ---
 
@@ -421,7 +402,8 @@ Every 10 iterations, Claude prints a progress summary. Bounded loops print a fin
 ```
 autoresearch/
 ├── README.md
-├── COMPARISON.md                                  ← Karpathy's Autoresearch vs Claude Autoresearch
+├── README.zh-CN.md                               ← Chinese getting-started guide
+├── COMPARISON.md                                  ← Karpathy's Autoresearch vs Codex Autoresearch
 ├── guide/                                         ← Comprehensive guides — one per command + advanced patterns
 │   ├── README.md                                  ← Guide index
 │   ├── getting-started.md                         ← Installation, core concepts, FAQ
@@ -452,39 +434,49 @@ autoresearch/
 │       ├── mobile-push-notifications.md
 │       └── adversarial-architecture-decisions.md
 ├── LICENSE
-├── .claude-plugin/
-│   └── marketplace.json                           ← Plugin marketplace manifest (source: ./claude-plugin)
-├── claude-plugin/                                 ← Distribution package (what users install)
-│   ├── .claude-plugin/
-│   │   └── plugin.json                            ← Plugin metadata + version
-│   ├── commands/
-│   │   ├── autoresearch.md                        ← Main /autoresearch command
-│   │   └── autoresearch/
-│   │       ├── ship.md                            ← /autoresearch:ship registration
-│   │       ├── plan.md                            ← /autoresearch:plan registration
-│   │       ├── security.md                        ← /autoresearch:security registration
-│   │       ├── debug.md                           ← /autoresearch:debug registration
-│   │       ├── fix.md                             ← /autoresearch:fix registration
-│   │       ├── scenario.md                        ← /autoresearch:scenario registration
-│   │       ├── predict.md                         ← /autoresearch:predict registration
-│   │       ├── learn.md                           ← /autoresearch:learn registration
-│   │       └── reason.md                          ← /autoresearch:reason registration
-│   └── skills/
-│       └── autoresearch/
-│           ├── SKILL.md                           ← Main skill (loaded by Claude Code)
-│           └── references/
-│               ├── autonomous-loop-protocol.md    ← 8-phase loop protocol
-│               ├── core-principles.md             ← 7 universal principles
-│               ├── plan-workflow.md               ← Plan wizard protocol
-│               ├── security-workflow.md           ← Security audit protocol
-│               ├── ship-workflow.md               ← Ship workflow protocol
-│               ├── debug-workflow.md              ← Debug loop protocol
-│               ├── fix-workflow.md                ← Fix loop protocol
-│               ├── scenario-workflow.md           ← Scenario exploration protocol
-│               ├── predict-workflow.md            ← Multi-persona swarm prediction workflow
-│               ├── learn-workflow.md              ← Documentation engine protocol
-│               ├── reason-workflow.md             ← Adversarial refinement protocol
-│               └── results-logging.md             ← TSV tracking format
+├── .agents/
+│   └── plugins/
+│       └── marketplace.json                       ← Repo-local Codex marketplace
+├── plugins/
+│   └── autoresearch/                              ← Codex plugin bundle
+│       ├── .codex-plugin/
+│       │   └── plugin.json                        ← Plugin metadata + version
+│       ├── commands/
+│       │   ├── autoresearch.md                    ← Main /autoresearch command
+│       │   ├── autoresearch-plan.md               ← /autoresearch:plan
+│       │   ├── autoresearch-security.md           ← /autoresearch:security
+│       │   ├── autoresearch-ship.md               ← /autoresearch:ship
+│       │   ├── autoresearch-debug.md              ← /autoresearch:debug
+│       │   ├── autoresearch-fix.md                ← /autoresearch:fix
+│       │   ├── autoresearch-scenario.md           ← /autoresearch:scenario
+│       │   ├── autoresearch-predict.md            ← /autoresearch:predict
+│       │   ├── autoresearch-learn.md              ← /autoresearch:learn
+│       │   └── autoresearch-reason.md             ← /autoresearch:reason
+│       ├── skills/
+│       │   ├── autoresearch/                      ← Core loop skill
+│       │   ├── autoresearch-plan/
+│       │   ├── autoresearch-security/
+│       │   ├── autoresearch-ship/
+│       │   ├── autoresearch-debug/
+│       │   ├── autoresearch-fix/
+│       │   ├── autoresearch-scenario/
+│       │   ├── autoresearch-predict/
+│       │   ├── autoresearch-learn/
+│       │   └── autoresearch-reason/
+│       ├── references/
+│       │   ├── autonomous-loop-protocol.md        ← Shared loop protocol
+│       │   ├── core-principles.md                 ← Shared principles
+│       │   ├── plan-workflow.md                   ← Plan wizard protocol
+│       │   ├── security-workflow.md               ← Security audit protocol
+│       │   ├── ship-workflow.md                   ← Ship workflow protocol
+│       │   ├── debug-workflow.md                  ← Debug loop protocol
+│       │   ├── fix-workflow.md                    ← Fix loop protocol
+│       │   ├── scenario-workflow.md               ← Scenario exploration protocol
+│       │   ├── predict-workflow.md                ← Multi-persona prediction workflow
+│       │   ├── learn-workflow.md                  ← Documentation engine protocol
+│       │   ├── reason-workflow.md                 ← Adversarial refinement protocol
+│       │   └── results-logging.md                 ← TSV tracking format
+│       └── README.md                              ← Plugin-specific usage notes
 ```
 
 ---
@@ -495,10 +487,10 @@ autoresearch/
 A: Run `/autoresearch:plan` — it analyzes your codebase, suggests metrics, and dry-runs the verify command before you launch.
 
 **Q: Does this work with any project?**
-A: Yes. Any language, framework, or domain. Install via `/plugin marketplace add uditgoenka/autoresearch` or manually copy from the `claude-plugin/` directory.
+A: Yes. Any language, framework, or domain. Install it through `/plugins` in this repo or copy `plugins/autoresearch/` plus the marketplace entry for a home-local install.
 
 **Q: How do I stop the loop?**
-A: `Ctrl+C` or add `Iterations: N` to your inline config to run exactly N iterations. Claude commits before verifying, so your last successful state is always in git.
+A: `Ctrl+C` or add `Iterations: N` to your inline config to run exactly N iterations. Codex commits before verifying, so your last successful state is always in git.
 
 **Q: Can I use this for non-code tasks?**
 A: Absolutely. Sales emails, marketing copy, HR policies, runbooks — anything with a measurable metric. See [Examples by Domain](guide/examples-by-domain.md).
@@ -507,7 +499,7 @@ A: Absolutely. Sales emails, marketing copy, HR policies, runbooks — anything 
 A: No. It's read-only — analyzes code and produces a structured report. Use `--fix` to opt into auto-remediation of confirmed Critical/High findings.
 
 **Q: Can I use MCP servers?**
-A: Yes. Any MCP server configured in Claude Code is available during the loop for database queries, API calls, analytics, etc. See [Advanced Patterns](guide/advanced-patterns.md#using-with-mcp-servers).
+A: Yes. Any MCP server configured in Codex CLI is available during the loop for database queries, API calls, analytics, etc. See [Advanced Patterns](guide/advanced-patterns.md#using-with-mcp-servers).
 
 **Q: What's the difference between /autoresearch:predict and /autoresearch:reason?**
 A: Predict is a one-shot analysis — 5 experts debate your existing code. Reason is an iterative refinement loop — competing candidates are generated, critiqued, synthesized, and blind-judged over multiple rounds until convergence. Use predict for analysis before acting; use reason for decisions where no objective metric exists.
@@ -543,7 +535,7 @@ MIT — see [LICENSE](LICENSE).
 ## Credits
 
 - **[Andrej Karpathy](https://github.com/karpathy)** — for [autoresearch](https://github.com/karpathy/autoresearch)
-- **[Anthropic](https://anthropic.com)** — for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and the skills system
+- **[OpenAI](https://openai.com)** — for Codex CLI and the Codex plugin ecosystem
 
 ---
 

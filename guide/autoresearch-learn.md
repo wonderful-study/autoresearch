@@ -40,7 +40,7 @@ Auto-detection: if `docs/` has 0 files → defaults to `init`. If docs exist →
 
 ## Interactive Setup
 
-When you run `/autoresearch:learn` without flags, Claude does a quick pre-scan first (counts existing docs, checks git staleness, detects project type), then asks 4 questions in a single prompt:
+When you run `/autoresearch:learn` without flags, Codex does a quick pre-scan first (counts existing docs, checks git staleness, detects project type), then asks 4 questions in a single prompt:
 
 | # | Question | Options |
 |---|----------|---------|
@@ -49,7 +49,7 @@ When you run `/autoresearch:learn` without flags, Claude does a quick pre-scan f
 | 3 | How comprehensive? | Quick (overview only) / Standard (all core docs) / Deep (+ deployment, design, API reference) |
 | 4 | Ready to start? | Launch / Edit config / Cancel |
 
-If you provide `--mode` plus at least one other flag, setup is skipped entirely and Claude starts immediately.
+If you provide `--mode` plus at least one other flag, setup is skipped entirely and Codex starts immediately.
 
 ---
 
@@ -76,7 +76,7 @@ If you provide `--mode` plus at least one other flag, setup is skipped entirely 
 /autoresearch:learn
 ```
 
-Claude pre-scans, then asks 4 questions. Minimum viable usage — just run it and answer the prompts.
+Codex pre-scans, then asks 4 questions. Minimum viable usage — just run it and answer the prompts.
 
 ---
 
@@ -142,7 +142,7 @@ Generates all core docs plus `deployment-guide.md`, `design-guidelines.md`, and 
 /autoresearch:learn --mode update
 ```
 
-When running in `update` mode, Claude automatically diffs existing docs against the current codebase and only regenerates sections that are stale. Files with no relevant code changes are skipped entirely, making updates faster and more precise.
+When running in `update` mode, Codex automatically diffs existing docs against the current codebase and only regenerates sections that are stale. Files with no relevant code changes are skipped entirely, making updates faster and more precise.
 
 ### 10. Generate docs in a different format
 
@@ -186,7 +186,7 @@ Generated and updated docs go to `docs/` directly — not here. The `learn/` fol
 
 ## Composite Metric — The Learn Score
 
-After each run, Claude calculates a single learn score:
+After each run, Codex calculates a single learn score:
 
 ```
 learn_score = (validation_score × 0.5)
@@ -287,11 +287,11 @@ Update docs, then open a PR with the changes:
 
 **Run `check` before `update` on large repos.** The health report shows which docs are stale and by how many days — scope your update with `--file` from there.
 
-**Use `--scope` on monorepos.** If the codebase has >10,000 files, Claude warns you. Use `--scope packages/api/**` or similar to avoid context overflow.
+**Use `--scope` on monorepos.** If the codebase has >10,000 files, Codex warns you. Use `--scope packages/api/**` or similar to avoid context overflow.
 
 **`--no-fix` is for speed, not quality.** The validation-fix loop catches hallucinated references. Skip it only for exploratory passes you plan to review manually.
 
-**`update` preserves your structure.** Claude reads existing docs before generating — it updates content, not layout. Your custom sections survive.
+**`update` preserves your structure.** Codex reads existing docs before generating — it updates content, not layout. Your custom sections survive.
 
 **`check` is strictly read-only.** It never writes any file. Safe to run anytime, including in CI.
 
@@ -318,13 +318,13 @@ Update reads existing docs first, then surgically refreshes stale sections while
 Five always-created docs: `project-overview-pdr.md`, `codebase-summary.md`, `code-standards.md`, `system-architecture.md`, and `README.md`. Deployment guide, design guidelines, and roadmap are conditional. Additional conditional docs are generated when signals are detected — see "Conditional Documentation" below.
 
 **Q: Why does validation still show warnings after the fix loop?**
-Some issues need human judgment — ambiguous broken references, config keys that appear in multiple places. Claude lists them in `summary.md` with recommendations rather than guessing.
+Some issues need human judgment — ambiguous broken references, config keys that appear in multiple places. Codex lists them in `summary.md` with recommendations rather than guessing.
 
 **Q: Can I run `:learn` in CI?**
 Yes. Use `--mode check` for a read-only health gate or `--mode update --no-fix` for a fast automated refresh. `learn-results.tsv` is parseable for CI reporting.
 
 **Q: What happens if the scout finds very little code?**
-Claude stops and warns you to verify source files exist or to narrow scope with `--scope`. It will not generate docs from an empty scan.
+Codex stops and warns you to verify source files exist or to narrow scope with `--scope`. It will not generate docs from an empty scan.
 
 ---
 

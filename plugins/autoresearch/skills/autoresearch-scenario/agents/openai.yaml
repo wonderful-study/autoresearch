@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Scenario"
+  short_description: "Generate edge cases and derivative scenarios"
+  default_prompt: "Explore scenarios and edge cases with the autoresearch scenario workflow."

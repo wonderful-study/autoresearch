@@ -1,6 +1,6 @@
 # Examples by Domain — Real-World Configurations
 
-Copy-paste configurations organized by domain. Every example includes the command, config, and what Claude does. All verification commands are real — paste them into your project and adjust paths as needed.
+Copy-paste configurations organized by domain. Every example includes the command, config, and what Codex does. All verification commands are real — paste them into your project and adjust paths as needed.
 
 [Software Engineering](#software-engineering-typescriptjavascript) · [Python & Django](#python--django) · [Go](#go) · [Rust](#rust) · [Sales & Lead Generation](#sales--lead-generation) · [SEO & Content Marketing](#seo--content-marketing) · [Marketing & Growth](#marketing--growth) · [Web Scraping & Data Collection](#web-scraping--data-collection) · [Research & Analysis](#research--analysis) · [DevOps & Infrastructure](#devops--infrastructure) · [Data Science & ML](#data-science--ml) · [Design & Accessibility](#design--accessibility) · [HR & People Operations](#hr--people-operations) · [Operations](#operations) · [Documentation & Knowledge Management](#documentation--knowledge-management) · [MCP Servers](#combining-with-mcp-servers) · [CI/CD Integration](#cicd-integration) · [Verification Scripts](#custom-verification-scripts)
 
@@ -29,7 +29,7 @@ Metric: coverage % (higher is better)
 Verify: npm test -- --coverage | grep "All files"
 ```
 
-Claude adds tests one-by-one. Each iteration: write test → run coverage → keep if % increased → discard if not → repeat.
+Codex adds tests one-by-one. Each iteration: write test → run coverage → keep if % increased → discard if not → repeat.
 
 ### Reduce bundle size
 
@@ -42,7 +42,7 @@ Metric: bundle size in KB (lower is better)
 Verify: npm run build 2>&1 | grep "First Load JS"
 ```
 
-Claude tries: tree-shaking unused imports, lazy-loading routes, replacing heavy libraries, code-splitting — one change at a time. 15 iterations is usually enough to find the big wins.
+Codex tries: tree-shaking unused imports, lazy-loading routes, replacing heavy libraries, code-splitting — one change at a time. 15 iterations is usually enough to find the big wins.
 
 ### Fix flaky tests
 
@@ -274,7 +274,7 @@ Metric: readability score + personalization token count (higher is better)
 Verify: node scripts/score-email-template.js
 ```
 
-Claude iterates on subject lines, opening hooks, CTAs, personalization variables — keeping changes that score higher.
+Codex iterates on subject lines, opening hooks, CTAs, personalization variables — keeping changes that score higher.
 
 ### Sales deck refinement
 
@@ -309,7 +309,7 @@ Metric: conversion checklist score (higher is better)
 Verify: node scripts/lead-magnet-score.js
 ```
 
-Claude iterates on headline, value proposition, form fields, social proof, urgency elements — one change per iteration.
+Codex iterates on headline, value proposition, form fields, social proof, urgency elements — one change per iteration.
 
 ### LinkedIn outreach sequences
 
@@ -365,7 +365,7 @@ Metric: SEO score from audit tool (higher is better)
 Verify: node scripts/seo-score.js --file content/blog/target-post.md
 ```
 
-Claude tweaks headings, keyword density, meta descriptions, internal links — one change per iteration. Run unlimited overnight, or bounded:
+Codex tweaks headings, keyword density, meta descriptions, internal links — one change per iteration. Run unlimited overnight, or bounded:
 
 ```
 /autoresearch
@@ -493,7 +493,7 @@ Verify: python scripts/scraper-test.py --sample 100 | grep "success_rate"
 Guard: python -m pytest tests/scrapers/
 ```
 
-Claude iterates on retry logic, selector resilience, timeout handling, rate limiting — one improvement per iteration.
+Codex iterates on retry logic, selector resilience, timeout handling, rate limiting — one improvement per iteration.
 
 ### Reduce scraping time per page
 
@@ -617,7 +617,7 @@ Verify: docker build --no-cache . 2>&1 | tail -1 | grep -oP '[\d.]+'
 Iterations: 10
 ```
 
-Claude targets one optimization per iteration: layer ordering, multi-stage builds, .dockerignore rules, apt-get cleanup, build argument caching.
+Codex targets one optimization per iteration: layer ordering, multi-stage builds, .dockerignore rules, apt-get cleanup, build argument caching.
 
 ### Kubernetes deployment optimization
 
@@ -724,7 +724,7 @@ Runs readiness checklist, deploys, then monitors for 10 minutes. Triggers auto-r
 Invoke autoresearch from the command line for DevOps workflows:
 
 ```bash
-# Interactive mode — Claude guides the optimization
+# Interactive mode — Codex guides the optimization
 claude "/autoresearch
 Goal: Reduce CI/CD pipeline from 12min to 5min
 Scope: .github/workflows/*.yml, Dockerfile, docker-compose.yml
@@ -1025,7 +1025,7 @@ Verify: node scripts/playbook-completeness.js
 Scope: src/**
 ```
 
-Claude scouts the codebase, detects project type (web app, library, CLI, API), generates all relevant docs (architecture, code standards, overview, summary), validates references, and iteratively fixes any hallucinated code refs. Creates deployment-guide.md only if Dockerfile/CI config detected.
+Codex scouts the codebase, detects project type (web app, library, CLI, API), generates all relevant docs (architecture, code standards, overview, summary), validates references, and iteratively fixes any hallucinated code refs. Creates deployment-guide.md only if Dockerfile/CI config detected.
 
 ### Update docs after a major refactor
 
@@ -1048,7 +1048,7 @@ Read-only diagnostic: staleness gap (days between last code commit vs last docs 
 
 ## Combining with MCP Servers
 
-Claude Code supports MCP (Model Context Protocol) servers. When combined with autoresearch, this enables real-time data-driven iteration loops.
+Codex CLI supports MCP (Model Context Protocol) servers. When combined with autoresearch, this enables real-time data-driven iteration loops.
 
 ### Database-aware query optimization
 
@@ -1062,7 +1062,7 @@ Metric: avg query time in ms (lower is better)
 Verify: Use MCP postgres tool to run EXPLAIN ANALYZE on each query, sum total costs
 ```
 
-Claude modifies queries, runs EXPLAIN ANALYZE via MCP on the live database, keeps improvements. Each iteration tests on real data, not synthetic benchmarks.
+Codex modifies queries, runs EXPLAIN ANALYZE via MCP on the live database, keeps improvements. Each iteration tests on real data, not synthetic benchmarks.
 
 ### Analytics-driven content optimization
 
@@ -1276,7 +1276,7 @@ Verify: node scripts/content-quality-scorer.js content/blog/latest.md
 | Rule | Why |
 |------|-----|
 | Runs in under 10 seconds | Fast = more iterations = more experiments |
-| Outputs a single parseable number | Claude needs to extract the metric mechanically |
+| Outputs a single parseable number | Codex needs to extract the metric mechanically |
 | Exit code 0 = success, non-zero = crash | Clean pass/fail signal |
 | No human judgment required | Agent must decide autonomously |
 | Deterministic (same input = same output) | Non-deterministic metrics break the feedback loop |

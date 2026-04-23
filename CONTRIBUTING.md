@@ -4,30 +4,25 @@ Thanks for wanting to make autoresearch better. Whether you're fixing a typo, ad
 
 ## Quick Start
 
-Autoresearch is Markdown files that Claude Code discovers from `skills/` and `commands/` directories. No build step, no compilation — edit a `.md` file, invoke the skill, see your changes.
+Autoresearch is Markdown files that Codex CLI discovers from `skills/` and `commands/` directories. No build step, no compilation — edit a `.md` file, invoke the skill, see your changes.
 
 ```bash
 # 1. Clone the repo
 git clone https://github.com/uditgoenka/autoresearch.git
 cd autoresearch
 
-# 2. Copy to your local Claude Code (for testing)
-cp -r claude-plugin/skills/autoresearch ~/.claude/skills/autoresearch
-cp -r claude-plugin/commands/autoresearch ~/.claude/commands/autoresearch
-cp claude-plugin/commands/autoresearch.md ~/.claude/commands/autoresearch.md
+# 2. Install the repo-local plugin in Codex
+# Open Codex CLI here, run /plugins, then install "autoresearch"
 
-# 3. Or symlink for live editing (recommended for development)
-ln -s $(pwd)/claude-plugin/skills/autoresearch ~/.claude/skills/autoresearch
-ln -s $(pwd)/claude-plugin/commands/autoresearch ~/.claude/commands/autoresearch
-ln -s $(pwd)/claude-plugin/commands/autoresearch.md ~/.claude/commands/autoresearch.md
+# 3. Or symlink the full plugin bundle for home-local live editing
+mkdir -p ~/plugins
+ln -s $(pwd)/plugins/autoresearch ~/plugins/autoresearch
 ```
 
 When done developing, replace symlinks with stable copies:
 ```bash
-rm ~/.claude/skills/autoresearch ~/.claude/commands/autoresearch ~/.claude/commands/autoresearch.md
-cp -r claude-plugin/skills/autoresearch ~/.claude/skills/autoresearch
-cp -r claude-plugin/commands/autoresearch ~/.claude/commands/autoresearch
-cp claude-plugin/commands/autoresearch.md ~/.claude/commands/autoresearch.md
+rm ~/plugins/autoresearch
+cp -R plugins/autoresearch ~/plugins/autoresearch
 ```
 
 ## Repository Structure
@@ -35,41 +30,17 @@ cp claude-plugin/commands/autoresearch.md ~/.claude/commands/autoresearch.md
 ```
 autoresearch/
 ├── README.md                                      ← Project overview + quick start
-├── .gitignore                                     ← Excludes local .claude/ state
-├── .claude-plugin/
-│   └── marketplace.json                           ← Plugin marketplace manifest (source: ./claude-plugin)
-├── claude-plugin/                                 ← DISTRIBUTION — what users install
-│   ├── .claude-plugin/
-│   │   └── plugin.json                            ← Plugin metadata + version
-│   ├── commands/
-│   │   ├── autoresearch.md                        ← Main /autoresearch command
-│   │   └── autoresearch/
-│   │       ├── plan.md                            ← /autoresearch:plan registration
-│   │       ├── security.md                        ← /autoresearch:security registration
-│   │       ├── ship.md                            ← /autoresearch:ship registration
-│   │       ├── debug.md                           ← /autoresearch:debug registration
-│   │       ├── fix.md                             ← /autoresearch:fix registration
-│   │       ├── scenario.md                        ← /autoresearch:scenario registration
-│   │       ├── predict.md                         ← /autoresearch:predict registration
-│   │       └── learn.md                           ← /autoresearch:learn registration
-│   └── skills/
-│       └── autoresearch/
-│           ├── SKILL.md                           ← Main skill (loaded by Claude Code)
-│           └── references/
-│               ├── autonomous-loop-protocol.md    ← 8-phase loop protocol
-│               ├── core-principles.md             ← 7 universal principles
-│               ├── plan-workflow.md               ← Plan wizard protocol
-│               ├── security-workflow.md           ← Security audit protocol
-│               ├── ship-workflow.md               ← Ship workflow protocol
-│               ├── debug-workflow.md              ← Debug loop protocol
-│               ├── fix-workflow.md                ← Fix loop protocol
-│               ├── scenario-workflow.md           ← Scenario exploration protocol
-│               ├── predict-workflow.md            ← Multi-persona swarm prediction workflow
-│               ├── learn-workflow.md              ← Learn/documentation engine protocol
-│               └── results-logging.md             ← TSV tracking format
-├── .claude/                                       ← LOCAL development (gitignored except autoresearch)
-│   ├── commands/autoresearch/                     ← Dev copies of commands
-│   └── skills/autoresearch/                       ← Dev copies of skills
+├── .gitignore                                     ← Excludes local Codex state
+├── .agents/
+│   └── plugins/
+│       └── marketplace.json                       ← Repo-local Codex marketplace
+├── plugins/
+│   └── autoresearch/                              ← Codex plugin bundle
+│       ├── .codex-plugin/plugin.json              ← Plugin metadata + version
+│       ├── commands/                              ← Slash command definitions
+│       ├── skills/                                ← Explicit Codex skills
+│       ├── references/                            ← Shared workflow protocols
+│       └── README.md                              ← Plugin bundle usage notes
 ├── guide/                                         ← Comprehensive guides — one per command
 │   ├── README.md                                  ← Guide index
 │   ├── getting-started.md                         ← Installation, core concepts, FAQ
@@ -111,8 +82,8 @@ autoresearch/
 | `references/predict-workflow.md` | `/autoresearch:predict` multi-persona swarm prediction workflow (751 lines). | Adding prediction personas, confidence models, output formats |
 | `references/learn-workflow.md` | `/autoresearch:learn` documentation engine protocol. | Adding doc types, validation checks, generation templates |
 | `references/results-logging.md` | TSV log format and reporting rules. | Changing log columns, summary format, reporting intervals |
-| `claude-plugin/commands/autoresearch/*.md` | Sub-command registration files. | Adding new sub-commands (creates the `/autoresearch:name` slash command) |
-| `claude-plugin/.claude-plugin/plugin.json` | Plugin metadata + version. | Version bumps (use `scripts/release.sh`) |
+| `plugins/autoresearch/commands/*.md` | Sub-command registration files. | Adding new sub-commands (creates the `/autoresearch:name` slash command) |
+| `plugins/autoresearch/.codex-plugin/plugin.json` | Plugin metadata + version. | Version bumps (use `scripts/release.sh`) |
 | `README.md` | Public overview, commands table, quick start. | Adding features, updating commands, documenting changes |
 | `guide/*.md` | Individual command guides, examples, advanced patterns. | Adding scenarios, command combinations, domain examples |
 | `guide/scenario/` | Scenario-specific guides and domain examples. | Adding scenario domains, edge case patterns |
@@ -152,15 +123,14 @@ cd autoresearch
 git checkout -b feat/your-feature-name
 
 # 3. Symlink for live testing
-ln -s $(pwd)/claude-plugin/skills/autoresearch ~/.claude/skills/autoresearch
-ln -s $(pwd)/claude-plugin/commands/autoresearch ~/.claude/commands/autoresearch
-ln -s $(pwd)/claude-plugin/commands/autoresearch.md ~/.claude/commands/autoresearch.md
+mkdir -p ~/plugins
+ln -s $(pwd)/plugins/autoresearch ~/plugins/autoresearch
 
 # 4. Make your changes
 # Edit skill files, reference files, commands, docs, etc.
 
-# 5. Test in Claude Code (changes are live via symlink)
-# Open Claude Code in any project and invoke the relevant command
+# 5. Test in Codex CLI (changes are live via symlink)
+# Open Codex CLI in any project and invoke the relevant command
 
 # 6. Commit with conventional format
 git add -A
@@ -212,7 +182,7 @@ We use [conventional commits](https://www.conventionalcommits.org/):
 | `EXAMPLES.md` | Added Rust examples section |
 
 ## How to Test
-1. Symlink skill to ~/.claude/skills/autoresearch
+1. Symlink skill to ~/plugins/autoresearch
 2. Run /autoresearch:fix in a Rust project
 3. Verify Rust-specific strategies are applied
 ```
@@ -224,7 +194,7 @@ Follow this pattern when adding a command like `/autoresearch:yourcommand`:
 ### 1. Create the reference file
 
 ```
-claude-plugin/skills/autoresearch/references/your-workflow.md
+plugins/autoresearch/references/your-workflow.md
 ```
 
 Contains: full protocol, phases, rules, examples, flags, error recovery, composite metric, output directory structure.
@@ -232,10 +202,12 @@ Contains: full protocol, phases, rules, examples, flags, error recovery, composi
 ### 2. Create the command registration file
 
 ```
-claude-plugin/commands/autoresearch/yourcommand.md
+plugins/autoresearch/commands/autoresearch-yourcommand.md
+plugins/autoresearch/skills/autoresearch-yourcommand/SKILL.md
+plugins/autoresearch/skills/autoresearch-yourcommand/agents/openai.yaml
 ```
 
-This thin wrapper tells Claude Code to load SKILL.md + your reference file and execute the workflow.
+The command file is the slash-command wrapper. The skill file is the Codex-native explicit workflow entry. The shared reference file holds the detailed protocol.
 
 ### 3. Register in SKILL.md
 
@@ -273,14 +245,14 @@ Add to the interactive setup gate table.
 No automated test suite — autoresearch is Markdown instructions, not code. Testing means using it:
 
 1. **Symlink your working tree** (see Quick Start)
-2. **Open Claude Code in a real project**
+2. **Open Codex CLI in a real project**
 3. **Invoke the skill** (`/autoresearch`, `/autoresearch:plan`, etc.)
 4. **Verify behavior matches your changes**
 5. **Try edge cases** — wrong metric? Scope matches 0 files? Guard always fails?
 
 ### What to Check
 
-- Does Claude follow your updated instructions?
+- Does Codex follow your updated instructions?
 - Does the output format match your specification?
 - Are error cases handled gracefully?
 - Does backward compatibility hold? (Existing commands still work)
@@ -305,10 +277,10 @@ The script: creates release branch → bumps plugin.json + README badge → paus
 ## Things to Know
 
 - **No build step.** Everything is Markdown. Edit → test → commit.
-- **SKILL.md is the entry point.** Claude Code reads this first. References are loaded on demand.
+- **SKILL.md is the entry point.** Codex CLI reads this first. References are loaded on demand.
 - **References are lazy-loaded.** Only loaded when the relevant sub-command is invoked. Keeps context usage low.
-- **claude-plugin/commands/ directory is required.** Without it, sub-commands (`/autoresearch:plan`, etc.) won't register as slash commands.
-- **Plugin system.** Users can install via `/plugin install` — the `.claude-plugin/marketplace.json` at root points to `./claude-plugin` as the distribution source.
+- **`plugins/autoresearch/commands/` is required.** Without it, the slash commands will not register.
+- **Plugin system.** Users install through `/plugins`, and `.agents/plugins/marketplace.json` points to `./plugins/autoresearch`.
 - **The repo is MIT licensed.** Your contributions will be under the same license.
 
 ## Getting Help

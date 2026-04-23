@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch"
+  short_description: "Run the autonomous metric-driven improvement loop"
+  default_prompt: "Run autoresearch on this repo with a clear goal, scope, metric, and verify command."

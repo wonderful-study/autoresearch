@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Learn"
+  short_description: "Generate, update, and validate documentation"
+  default_prompt: "Run the autoresearch learn workflow on this repository."

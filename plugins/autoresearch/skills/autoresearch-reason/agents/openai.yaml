@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Reason"
+  short_description: "Debate and converge on subjective decisions"
+  default_prompt: "Run the autoresearch reason workflow for this decision."

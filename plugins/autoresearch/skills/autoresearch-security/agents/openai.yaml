@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Security"
+  short_description: "Run the STRIDE and OWASP audit workflow"
+  default_prompt: "Audit this repository with the autoresearch security workflow."

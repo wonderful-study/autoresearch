@@ -23,15 +23,11 @@
 ```
 [1/7] Create release branch (release/X.Y.Z)
 [2/7] Bump versions:
-      → claude-plugin/.claude-plugin/plugin.json  (version field)
-      → .claude-plugin/marketplace.json           (version fields — top-level + plugins array)
-      → .claude/skills/autoresearch/SKILL.md      (version frontmatter)
+      → plugins/autoresearch/.codex-plugin/plugin.json
       → README.md                                 (version badge)
       → guide/README.md                           (version badge)
-[3/7] Sync distribution files:
-      → Copies .claude/commands/autoresearch/ → claude-plugin/commands/autoresearch/
-      → Copies .claude/skills/autoresearch/  → claude-plugin/skills/autoresearch/
-      → Ensures claude-plugin/ distribution matches .claude/ source of truth
+[3/7] Run compatibility scan:
+      → Fails if Claude-specific leftovers remain in shipped content
 [4/7] Pause for doc review:
       → Shows changelog since last tag
       → Prompts you to review README.md, guide/, CONTRIBUTING.md
@@ -90,22 +86,11 @@ At step [4/7], the script pauses and shows the changelog. Review these files:
 - Type `skip` at the prompt to continue without doc changes
 - The script stages any doc changes automatically (README.md, guide/, CONTRIBUTING.md, COMPARISON.md)
 
-## Distribution Sync
+## Codex Distribution
 
-The `claude-plugin/` directory is the **distribution package** — what Claude Code downloads when users install the plugin. The `.claude/` versions are the development source of truth.
+The shipped bundle lives in `plugins/autoresearch/`, and the repo-local marketplace entry lives in `.agents/plugins/marketplace.json`.
 
-**Why `claude-plugin/` and not root?** Claude Code's plugin caching downloads the `source` directory. If `source` is `"./"` (the entire repo), the cached plugin contains its own `.claude-plugin/marketplace.json`, causing Claude Code to recursively cache the plugin inside itself — hitting macOS's 1024-char path limit (`ENAMETOOLONG`). Pointing `source` to `./claude-plugin` (an isolated distribution directory without `marketplace.json`) breaks this recursion.
-
-**Before every release**, the script syncs `claude-plugin/` from `.claude/`:
-```bash
-# What the sync step does:
-cp .claude/commands/autoresearch.md claude-plugin/commands/autoresearch.md
-cp .claude/commands/autoresearch/*.md claude-plugin/commands/autoresearch/
-cp .claude/skills/autoresearch/SKILL.md claude-plugin/skills/autoresearch/SKILL.md
-cp .claude/skills/autoresearch/references/*.md claude-plugin/skills/autoresearch/references/
-```
-
-If you add a new subcommand during development, it goes into `.claude/` first. The release script ensures `claude-plugin/` stays in sync.
+The release script does not sync from any hidden source directory. `plugins/autoresearch/` is the source of truth.
 
 ## Abort and Resume
 
@@ -128,4 +113,4 @@ git checkout master && git branch -D release/X.Y.Z
 | PR merge conflicts | Resolve on the PR, then re-run merge step manually |
 | Forgot to update docs | Edit on the PR branch, push, then merge |
 | "Tag already exists" | Choose a different version number |
-| ENAMETOOLONG on install | Ensure `marketplace.json` has `"source": "./claude-plugin"` (not `"./"`) |
+| Compatibility scan fails | Remove Claude-specific leftovers such as `AskUserQuestion`, `.claude/`, or `.claude-plugin` from shipped files |

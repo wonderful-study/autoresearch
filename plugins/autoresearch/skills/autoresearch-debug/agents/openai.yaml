@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Debug"
+  short_description: "Run the autonomous bug-hunting workflow"
+  default_prompt: "Investigate this repository with the autoresearch debug workflow."

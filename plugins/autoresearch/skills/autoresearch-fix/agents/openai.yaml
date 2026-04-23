@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Fix"
+  short_description: "Repair failing checks one iteration at a time"
+  default_prompt: "Run the autoresearch fix workflow on the current repository."

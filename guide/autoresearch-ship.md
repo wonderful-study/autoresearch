@@ -73,7 +73,7 @@ If it can't determine the type with confidence, it asks one clarifying question.
 /autoresearch:ship
 ```
 
-Claude inspects context, asks one clarifying question if needed, runs the full 8-phase pipeline.
+Codex inspects context, asks one clarifying question if needed, runs the full 8-phase pipeline.
 
 ---
 

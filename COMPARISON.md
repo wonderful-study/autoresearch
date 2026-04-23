@@ -1,10 +1,10 @@
 <div align="center">
 
-# Karpathy's Autoresearch vs Claude Autoresearch
+# Karpathy's Autoresearch vs Codex Autoresearch
 
 **The original ML research loop vs the universal autonomous improvement engine**
 
-*How a 630-line Python training script inspired a domain-agnostic skill system built on Claude Code*
+*How a 630-line Python training script inspired a domain-agnostic skill system built on Codex CLI*
 
 </div>
 
@@ -14,7 +14,7 @@
 
 In March 2026, **[Andrej Karpathy](https://github.com/karpathy)** released [autoresearch](https://github.com/karpathy/autoresearch) — a 630-line Python script that let AI agents autonomously optimize a GPT language model overnight. In 2 days, a single agent ran **700 experiments**, discovered **20 optimizations**, and achieved an **11% speedup** on already-optimized code. The repo hit 26,000 GitHub stars in under a week.
 
-**[Claude Autoresearch](https://github.com/uditgoenka/autoresearch)** by **[Udit Goenka](https://udit.co)** takes Karpathy's core principles — constraint, mechanical metric, autonomous iteration — and generalizes them into a **Claude Code skill system** with 10 commands that work on **any domain**: code, content, marketing, sales, security, DevOps, HR, or anything with a measurable number.
+**[Codex Autoresearch](https://github.com/uditgoenka/autoresearch)** by **[Udit Goenka](https://udit.co)** takes Karpathy's core principles — constraint, mechanical metric, autonomous iteration — and generalizes them into a **Codex CLI skill system** with 10 commands that work on **any domain**: code, content, marketing, sales, security, DevOps, HR, or anything with a measurable number.
 
 The philosophy is the same. The scope is radically different.
 
@@ -22,21 +22,21 @@ The philosophy is the same. The scope is radically different.
 
 ## At a Glance
 
-| | **Karpathy's Autoresearch** | **Claude Autoresearch** |
+| | **Karpathy's Autoresearch** | **Codex Autoresearch** |
 |---|---|---|
-| **What it is** | Python script for autonomous ML training optimization | Claude Code skill for autonomous improvement of anything measurable |
+| **What it is** | Python script for autonomous ML training optimization | Codex CLI skill for autonomous improvement of anything measurable |
 | **Created by** | Andrej Karpathy (ex-Tesla AI, OpenAI) | Udit Goenka (AI Product Expert, Founder) |
 | **Released** | March 2026 | March 2026 |
-| **Language** | Python (PyTorch) | Markdown (Claude Code skill system) |
+| **Language** | Python (PyTorch) | Markdown (Codex CLI skill system) |
 | **LOC** | ~630 (train.py) | ~5,000+ across skill definitions and references |
-| **Runtime** | Python + NVIDIA GPU + CUDA | Claude Code (any OS, any project, any language) |
+| **Runtime** | Python + NVIDIA GPU + CUDA | Codex CLI (any OS, any project, any language) |
 | **Domain** | ML model training only | Any domain with a measurable metric |
 | **Metric** | val_bpb (validation bits per byte) | Any mechanical metric you define |
 | **Scope** | Single file (train.py) | Any glob pattern (e.g., `src/**/*.ts`) |
 | **Commands** | 1 (run the script) | 10 subcommands + flags |
 | **Setup** | Manual (edit program.md) | Interactive wizard (`/autoresearch:plan`) |
-| **Hardware** | Requires NVIDIA GPU (H100/A100/RTX) | No special hardware — runs wherever Claude Code runs |
-| **Cost** | GPU compute ($2-5/hour for H100) | Claude API tokens only |
+| **Hardware** | Requires NVIDIA GPU (H100/A100/RTX) | No special hardware — runs wherever Codex CLI runs |
+| **Cost** | GPU compute ($2-5/hour for H100) | Codex API tokens only |
 | **License** | MIT | MIT |
 
 ---
@@ -62,12 +62,12 @@ AGENT + CONSTRAINED_SCOPE + SCALAR_METRIC + FAST_VERIFICATION = AUTONOMOUS_IMPRO
 8. Repeat forever.
 ```
 
-### Claude Autoresearch Loop
+### Codex Autoresearch Loop
 
 ```
-1. Claude reads all in-scope files + git history + results log
-2. Claude picks the next change (based on patterns from history)
-3. Claude makes ONE focused change
+1. Codex reads all in-scope files + git history + results log
+2. Codex picks the next change (based on patterns from history)
+3. Codex makes ONE focused change
 4. Git commit (before verification)
 5. Run mechanical verification (any command)
 6. Run guard command (optional safety net)
@@ -77,7 +77,7 @@ AGENT + CONSTRAINED_SCOPE + SCALAR_METRIC + FAST_VERIFICATION = AUTONOMOUS_IMPRO
 
 **Key differences in the loop:**
 
-| Aspect | Karpathy | Claude Autoresearch |
+| Aspect | Karpathy | Codex Autoresearch |
 |--------|----------|---------------------|
 | **Scope reading** | Single file (train.py) | All in-scope files + git history + results log |
 | **History awareness** | Git log only | Git log + TSV results log + pattern analysis |
@@ -93,12 +93,12 @@ AGENT + CONSTRAINED_SCOPE + SCALAR_METRIC + FAST_VERIFICATION = AUTONOMOUS_IMPRO
 
 ## Shared Principles: The 7 Universals
 
-Both projects are built on the same philosophical foundation. Karpathy discovered them in ML; Claude Autoresearch applies them everywhere:
+Both projects are built on the same philosophical foundation. Karpathy discovered them in ML; Codex Autoresearch applies them everywhere:
 
-| # | Principle | Karpathy's Expression | Claude Autoresearch's Expression |
+| # | Principle | Karpathy's Expression | Codex Autoresearch's Expression |
 |---|-----------|----------------------|--------------------------------|
 | 1 | **Constraint = Enabler** | 630-line file, 5-min budget, one metric | User-defined scope (glob), iteration budget, single metric |
-| 2 | **Strategy ≠ Tactics** | Human writes program.md (what), agent codes train.py (how) | Human sets Goal/Metric (what), Claude iterates (how) |
+| 2 | **Strategy ≠ Tactics** | Human writes program.md (what), agent codes train.py (how) | Human sets Goal/Metric (what), Codex iterates (how) |
 | 3 | **Mechanical Metrics** | val_bpb — vocabulary-independent, compression-based | Any command that outputs a number (`npm test --coverage`, `wc -l`, etc.) |
 | 4 | **Fast Verification** | 5-min training cycle (~12 experiments/hour) | Seconds-level verify commands (~360 experiments/hour possible) |
 | 5 | **Iteration Cost → Behavior** | 5-min cost enables bold exploration | <30s cost enables even bolder exploration |
@@ -113,11 +113,11 @@ Karpathy's question #7 in his unresolved questions was:
 
 > *"Could autoresearch pattern apply to software engineering (bug fixing, refactoring)? Could it work for non-differentiable systems? What domains satisfy the 'scalar metric + fast eval' requirement?"*
 
-Claude Autoresearch answers: **all of them.**
+Codex Autoresearch answers: **all of them.**
 
 ### Domain Comparison
 
-| Domain | Karpathy's Autoresearch | Claude Autoresearch |
+| Domain | Karpathy's Autoresearch | Codex Autoresearch |
 |--------|------------------------|---------------------|
 | **ML Training** | ✅ Primary and only domain | ✅ Supported (with Python verify commands) |
 | **Software Engineering** | ❌ Not supported | ✅ Test coverage, bundle size, type errors, lint, LOC |
@@ -132,7 +132,7 @@ Claude Autoresearch answers: **all of them.**
 
 ### Metric Comparison
 
-| | Karpathy | Claude Autoresearch |
+| | Karpathy | Codex Autoresearch |
 |---|----------|---------------------|
 | **Number of metrics** | 1 (val_bpb) | Unlimited (user-defined) |
 | **Direction** | Lower is better (fixed) | Higher or lower (user-specified) |
@@ -153,7 +153,7 @@ uv run train.py    # That's it. The entire interface.
 
 Configuration via `program.md` (a markdown file the agent reads for instructions). No flags, no modes, no interactive setup.
 
-### Claude Autoresearch: 10 Specialized Commands
+### Codex Autoresearch: 10 Specialized Commands
 
 | Command | What It Does | Karpathy Equivalent |
 |---------|-------------|---------------------|
@@ -168,7 +168,7 @@ Configuration via `program.md` (a markdown file the agent reads for instructions
 | `/autoresearch:learn` | Autonomous documentation engine — scout, generate, validate, fix | ❌ No equivalent |
 | `/autoresearch:reason` | Adversarial refinement — blind judge debate for subjective domains | ❌ No equivalent (Karpathy's Q7: "non-differentiable systems") |
 
-### Command Chaining (Claude Autoresearch Only)
+### Command Chaining (Codex Autoresearch Only)
 
 Commands chain together — each command's output feeds the next:
 
@@ -204,20 +204,19 @@ uv run prepare.py
 # 4. Edit program.md with your instructions
 vim program.md
 
-# 5. Run (requires AI agent like Claude or GPT-4 connected externally)
+# 5. Run (requires AI agent like Codex or GPT-4 connected externally)
 uv run train.py
 ```
 
 **Requires:** NVIDIA GPU, CUDA 12.8+, Python 3.10+, PyTorch 2.9.1, dataset download, external AI agent connection.
 
-### Claude Autoresearch: Interactive, Zero-Config
+### Codex Autoresearch: Interactive, Zero-Config
 
 ```bash
-# 1. Install (one command in Claude Code)
-/plugin marketplace add uditgoenka/autoresearch
-/plugin install autoresearch@autoresearch
+# 1. Install (repo-local Codex plugin)
+/plugins
 
-# 2. Run (Claude asks you what you need)
+# 2. Run (Codex asks you what you need)
 /autoresearch
 
 # Or use the wizard:
@@ -225,7 +224,7 @@ uv run train.py
 Goal: Increase test coverage to 90%
 ```
 
-**Requires:** Claude Code. That's it. No GPU, no dataset, no Python, no CUDA. Works on any OS, any project, any programming language.
+**Requires:** Codex CLI. That's it. No GPU, no dataset, no Python, no CUDA. Works on any OS, any project, any programming language.
 
 ---
 
@@ -247,11 +246,11 @@ autoresearch/
 - `train.py` — model architecture, optimizer, training loop (AGENT MODIFIES THIS)
 - `program.md` — high-level strategy (HUMAN WRITES THIS)
 
-### Claude Autoresearch: Modular Skill System
+### Codex Autoresearch: Modular Skill System
 
 ```
 autoresearch/
-├── claude-plugin/                          ← Distribution package
+├── plugins/autoresearch/                          ← Distribution package
 │   ├── commands/
 │   │   ├── autoresearch.md                 ← Main command registration
 │   │   └── autoresearch/
@@ -292,7 +291,7 @@ autoresearch/
 └── README.md
 ```
 
-**Key architectural difference:** Karpathy's autoresearch IS the script. Claude Autoresearch is a PROTOCOL that tells Claude how to behave — the actual iteration happens through Claude Code's native tools (Read, Edit, Write, Bash, Git).
+**Key architectural difference:** Karpathy's autoresearch IS the script. Codex Autoresearch is a PROTOCOL that tells Codex how to behave — the actual iteration happens through Codex CLI's native tools (Read, Edit, Write, Bash, Git).
 
 ---
 
@@ -300,7 +299,7 @@ autoresearch/
 
 ### The Core Loop
 
-| Feature | Karpathy | Claude Autoresearch |
+| Feature | Karpathy | Codex Autoresearch |
 |---------|----------|---------------------|
 | Loop type | Infinite (until Ctrl+C) | Infinite OR bounded (`Iterations: N`) |
 | Iteration cost | 5 minutes (fixed, GPU-bound) | Seconds to minutes (depends on verify command) |
@@ -308,14 +307,14 @@ autoresearch/
 | Experiments overnight | ~100 | Up to ~2,880 (with 10s verify cycle) |
 | Scope | Single file (train.py, 630 LOC) | Any file pattern (`src/**/*.ts`, `content/*.md`, etc.) |
 | Multi-file edits | ❌ Not allowed | ✅ Any files within scope |
-| Modification approach | Rewrite portions of train.py | Surgical edits via Claude Code's Edit tool |
+| Modification approach | Rewrite portions of train.py | Surgical edits via Codex CLI's Edit tool |
 | Rollback mechanism | `git reset` (destructive, loses history) | `git revert` (preserves failed experiments in history) |
 | Results format | TSV (basic columns) | TSV (iteration, commit, metric, delta, guard, status, description) |
 | Progress summaries | ❌ None | ✅ Every 10 iterations + final summary |
 
 ### Verification & Safety
 
-| Feature | Karpathy | Claude Autoresearch |
+| Feature | Karpathy | Codex Autoresearch |
 |---------|----------|---------------------|
 | Verify command | Built-in: train for 5 min, evaluate val_bpb | User-defined: any shell command that outputs a number |
 | Guard command | ❌ None | ✅ Optional safety net (e.g., `npm test`) |
@@ -328,7 +327,7 @@ autoresearch/
 
 ### Git Integration
 
-| Feature | Karpathy | Claude Autoresearch |
+| Feature | Karpathy | Codex Autoresearch |
 |---------|----------|---------------------|
 | Branch strategy | Experimental branches (`autoresearch/mar5`) | Works on current branch (no special branching) |
 | Commit prefix | Agent-chosen message | `experiment:` prefix |
@@ -338,7 +337,7 @@ autoresearch/
 
 ### Interactive Setup
 
-| Feature | Karpathy | Claude Autoresearch |
+| Feature | Karpathy | Codex Autoresearch |
 |---------|----------|---------------------|
 | Setup wizard | ❌ None — edit program.md manually | ✅ `/autoresearch:plan` — 7-step interactive wizard |
 | Codebase analysis | ❌ None | ✅ Detects tech stack, test runner, linter, build tools |
@@ -348,7 +347,7 @@ autoresearch/
 
 ### Specialized Workflows
 
-| Workflow | Karpathy | Claude Autoresearch |
+| Workflow | Karpathy | Codex Autoresearch |
 |----------|----------|---------------------|
 | **Bug hunting** | ❌ Not supported | ✅ `/autoresearch:debug` — scientific method, 7 investigation techniques |
 | **Error fixing** | ❌ Not supported | ✅ `/autoresearch:fix` — iterative repair until zero errors |
@@ -361,31 +360,31 @@ autoresearch/
 
 ### Platform & Compatibility
 
-| Feature | Karpathy | Claude Autoresearch |
+| Feature | Karpathy | Codex Autoresearch |
 |---------|----------|---------------------|
-| **Operating Systems** | Linux (primary), macOS (via fork), Windows (via fork) | Any OS that runs Claude Code (macOS, Linux, Windows) |
+| **Operating Systems** | Linux (primary), macOS (via fork), Windows (via fork) | Any OS that runs Codex CLI (macOS, Linux, Windows) |
 | **Hardware** | NVIDIA GPU required (H100/A100/RTX) | No special hardware |
 | **GPU required** | ✅ Yes (CUDA 12.8+) | ❌ No |
 | **Programming languages** | Python only | Any language (TypeScript, Python, Go, Rust, Java, Ruby, etc.) |
-| **Dependencies** | PyTorch 2.9.1, CUDA, numpy, tqdm | Claude Code only |
+| **Dependencies** | PyTorch 2.9.1, CUDA, numpy, tqdm | Codex CLI only |
 | **Installation** | git clone + uv sync + data prep | `/plugin marketplace add uditgoenka/autoresearch` |
-| **Cost model** | GPU compute ($2-5/hour for H100) | Claude API tokens |
-| **Offline capable** | ✅ Yes (after data prep) | ❌ Requires Claude API |
+| **Cost model** | GPU compute ($2-5/hour for H100) | Codex API tokens |
+| **Offline capable** | ✅ Yes (after data prep) | ❌ Requires Codex API |
 | **CI/CD integration** | ❌ Not designed for CI | ✅ GitHub Actions, GitLab CI, pre-commit hooks |
 | **MCP server support** | ❌ N/A | ✅ Any configured MCP server (databases, analytics, APIs) |
 
 ---
 
-## What Claude Autoresearch Adds (Built-In Features Not in Karpathy's Version)
+## What Codex Autoresearch Adds (Built-In Features Not in Karpathy's Version)
 
 ### 1. Interactive Planning (`/autoresearch:plan`)
-Karpathy's setup requires editing `program.md` by hand. Claude Autoresearch walks you through 7 steps: capture goal → analyze codebase → define scope → define metric → set guard → define direction → validate verify command (dry-run). Every gate is mechanical — scope must resolve to files, metric must output a number, verify must pass a dry-run.
+Karpathy's setup requires editing `program.md` by hand. Codex Autoresearch walks you through 7 steps: capture goal → analyze codebase → define scope → define metric → set guard → define direction → validate verify command (dry-run). Every gate is mechanical — scope must resolve to files, metric must output a number, verify must pass a dry-run.
 
 ### 2. Guard Commands
-Karpathy's loop has no safety net. If the agent improves val_bpb but breaks something else, there's no detection. Claude Autoresearch adds `Guard:` — a command that must always pass. Metric improves but guard fails? Claude reworks the optimization (max 2 attempts). This enables safe optimization of one metric without regressing another.
+Karpathy's loop has no safety net. If the agent improves val_bpb but breaks something else, there's no detection. Codex Autoresearch adds `Guard:` — a command that must always pass. Metric improves but guard fails? Codex reworks the optimization (max 2 attempts). This enables safe optimization of one metric without regressing another.
 
 ### 3. Bounded Iterations (`Iterations: N`)
-Karpathy's loop runs until interrupted. Claude Autoresearch supports bounded runs: `Iterations: 25` means "run exactly 25 iterations, then stop and print a summary." Essential for CI/CD integration and time-boxed sessions.
+Karpathy's loop runs until interrupted. Codex Autoresearch supports bounded runs: `Iterations: 25` means "run exactly 25 iterations, then stop and print a summary." Essential for CI/CD integration and time-boxed sessions.
 
 ### 4. Bug Hunting (`/autoresearch:debug`)
 Scientific method meets the autoresearch loop. Gather symptoms → recon → hypothesize → test → classify → log → repeat. Uses 7 investigation techniques: binary search, differential debugging, minimal reproduction, trace execution, pattern search, working backwards, rubber duck. Chain with `/autoresearch:fix` to auto-repair findings.
@@ -409,10 +408,10 @@ Takes a seed scenario and generates situations across 12 dimensions: happy path,
 4-mode documentation engine: init (create from scratch), update (refresh existing), check (read-only health report), summarize (quick overview). Scouts codebase, detects project type, generates docs with Mermaid diagrams and cross-references, then validates and iteratively fixes until docs match reality. Auto-generates conditional docs (API reference, testing guide, config guide, changelog) when signals detected.
 
 ### 11. Noise Handling
-Real-world metrics fluctuate (benchmark times, Lighthouse scores). Claude Autoresearch supports multi-run verification (run verify 3-5 times, use median), minimum delta thresholds (only keep if improvement exceeds noise floor), and confirmation runs.
+Real-world metrics fluctuate (benchmark times, Lighthouse scores). Codex Autoresearch supports multi-run verification (run verify 3-5 times, use median), minimum delta thresholds (only keep if improvement exceeds noise floor), and confirmation runs.
 
 ### 12. Crash Recovery Protocol
-| Failure | Karpathy | Claude Autoresearch |
+| Failure | Karpathy | Codex Autoresearch |
 |---------|----------|---------------------|
 | Syntax error | Agent may keep iterating on broken code | Fix immediately, don't count as iteration |
 | Runtime error | Manual intervention required | Auto-fix (max 3 tries), then move on |
@@ -421,7 +420,7 @@ Real-world metrics fluctuate (benchmark times, Lighthouse scores). Claude Autore
 | External dependency | Loop fails | Skip, log, try different approach |
 
 ### 13. Stuck Escalation
-After 5 consecutive discards, Claude auto-escalates:
+After 5 consecutive discards, Codex auto-escalates:
 1. Re-reads ALL in-scope files from scratch
 2. Re-reads the original goal statement
 3. Reviews the entire results log for patterns
@@ -435,20 +434,20 @@ Karpathy's loop has no stuck detection — it just keeps trying.
 GitHub Actions, GitLab CI, and pre-commit hook examples for automated nightly optimization, security gates on PRs, and auto-fix workflows. None of this exists in Karpathy's version.
 
 ### 15. MCP Server Integration
-Claude Autoresearch can use any MCP server during the loop — databases (PostgreSQL), analytics platforms, external APIs, Puppeteer/Playwright, Slack, Stripe, Sentry, Cloudflare. This enables real-time data-driven iteration against live systems.
+Codex Autoresearch can use any MCP server during the loop — databases (PostgreSQL), analytics platforms, external APIs, Puppeteer/Playwright, Slack, Stripe, Sentry, Cloudflare. This enables real-time data-driven iteration against live systems.
 
 ---
 
-## What Karpathy's Version Has That Claude Autoresearch Doesn't
+## What Karpathy's Version Has That Codex Autoresearch Doesn't
 
 | Feature | Why It Matters |
 |---------|---------------|
-| **Real GPU training** | Karpathy's loop actually trains neural networks. Claude Autoresearch runs verification commands but doesn't directly train models (though it can invoke training scripts via verify). |
-| **Model architecture optimization** | Karpathy's agent modifies attention patterns, optimizers, learning rates — actual ML architecture decisions. Claude Autoresearch is metric-agnostic and doesn't have built-in ML knowledge. |
-| **Validated ML results** | 700 experiments, 20 improvements, 11% speedup — peer-reviewable ML results. Claude Autoresearch results depend on the user's domain and verify command. |
-| **Immutable evaluation** | val_bpb evaluation is in prepare.py (agent cannot modify it). Claude Autoresearch trusts the user's verify command — a user could accidentally create a verify command that's gameable. |
-| **Offline operation** | Karpathy's loop runs entirely offline after data prep. Claude Autoresearch requires the Claude API. |
-| **GPU-accelerated training** | 5-minute training cycles on H100 produce real model improvements. Claude Autoresearch doesn't directly leverage GPU compute. |
+| **Real GPU training** | Karpathy's loop actually trains neural networks. Codex Autoresearch runs verification commands but doesn't directly train models (though it can invoke training scripts via verify). |
+| **Model architecture optimization** | Karpathy's agent modifies attention patterns, optimizers, learning rates — actual ML architecture decisions. Codex Autoresearch is metric-agnostic and doesn't have built-in ML knowledge. |
+| **Validated ML results** | 700 experiments, 20 improvements, 11% speedup — peer-reviewable ML results. Codex Autoresearch results depend on the user's domain and verify command. |
+| **Immutable evaluation** | val_bpb evaluation is in prepare.py (agent cannot modify it). Codex Autoresearch trusts the user's verify command — a user could accidentally create a verify command that's gameable. |
+| **Offline operation** | Karpathy's loop runs entirely offline after data prep. Codex Autoresearch requires the Codex API. |
+| **GPU-accelerated training** | 5-minute training cycles on H100 produce real model improvements. Codex Autoresearch doesn't directly leverage GPU compute. |
 
 ---
 
@@ -466,11 +465,11 @@ Karpathy's design is deliberately minimal. The constraints aren't limitations �
 
 The cost: it only works for ML training optimization on a single GPU.
 
-### Claude Autoresearch: Generalized, Modular, Domain-Agnostic
+### Codex Autoresearch: Generalized, Modular, Domain-Agnostic
 
-> *"Set the GOAL → Claude runs the LOOP → You wake up to results"*
+> *"Set the GOAL → Codex runs the LOOP → You wake up to results"*
 
-Claude Autoresearch's design trades ML-specific depth for universal breadth. The same 7 principles apply, but scope, metric, and verify are user-defined — making it work for any domain. The 11 subcommands (including the core loop) add specialized workflows that don't exist in Karpathy's version:
+Codex Autoresearch's design trades ML-specific depth for universal breadth. The same 7 principles apply, but scope, metric, and verify are user-defined — making it work for any domain. The 11 subcommands (including the core loop) add specialized workflows that don't exist in Karpathy's version:
 
 - **Debugging** and **fixing** are fundamentally different from optimization — they have different loop structures, different success criteria, and different strategies.
 - **Security auditing** is adversarial — it requires threat modeling, not metric improvement.
@@ -486,18 +485,18 @@ The cost: it doesn't directly train models or leverage GPU compute.
 | Scenario | Use |
 |----------|-----|
 | Optimizing neural network training | **Karpathy's** — purpose-built for this |
-| Improving test coverage in a TypeScript project | **Claude Autoresearch** |
-| Reducing API response times | **Claude Autoresearch** |
-| Finding and fixing bugs | **Claude Autoresearch** (`debug → fix`) |
-| Security audit before deployment | **Claude Autoresearch** (`security`) |
+| Improving test coverage in a TypeScript project | **Codex Autoresearch** |
+| Reducing API response times | **Codex Autoresearch** |
+| Finding and fixing bugs | **Codex Autoresearch** (`debug → fix`) |
+| Security audit before deployment | **Codex Autoresearch** (`security`) |
 | Optimizing val_bpb on a GPT model | **Karpathy's** |
-| Improving Lighthouse score | **Claude Autoresearch** |
-| Exploring edge cases for a feature | **Claude Autoresearch** (`scenario`) |
-| Shipping a PR with confidence | **Claude Autoresearch** (`ship`) |
-| Getting expert opinions before acting | **Claude Autoresearch** (`predict`) |
-| Generating or refreshing project docs | **Claude Autoresearch** (`learn`) |
+| Improving Lighthouse score | **Codex Autoresearch** |
+| Exploring edge cases for a feature | **Codex Autoresearch** (`scenario`) |
+| Shipping a PR with confidence | **Codex Autoresearch** (`ship`) |
+| Getting expert opinions before acting | **Codex Autoresearch** (`predict`) |
+| Generating or refreshing project docs | **Codex Autoresearch** (`learn`) |
 | Running overnight ML experiments on H100 | **Karpathy's** |
-| Improving ANY metric in ANY project | **Claude Autoresearch** |
+| Improving ANY metric in ANY project | **Codex Autoresearch** |
 
 ---
 
@@ -511,8 +510,8 @@ The cost: it doesn't directly train models or leverage GPU compute.
 - Industry adoption: Shopify CEO achieved 19% gain on 37 experiments
 - Media: Fortune, VentureBeat, The New Stack, Medium coverage
 
-### Claude Autoresearch Ecosystem
-- **Claude Code plugin marketplace** — one-command install
+### Codex Autoresearch Ecosystem
+- **Codex CLI plugin marketplace** — one-command install
 - **10 subcommands** with comprehensive guides
 - **50+ copy-paste examples** across 12+ domains
 - **CI/CD templates** for GitHub Actions and GitLab CI
@@ -525,7 +524,7 @@ The cost: it doesn't directly train models or leverage GPU compute.
 
 **Karpathy's autoresearch** proved that autonomous iteration works — a 630-line script, one metric, one file, and the discipline to let the agent run. It's a breakthrough demonstration focused on ML training.
 
-**Claude Autoresearch** takes that proof and asks: *what if this worked for everything?* It generalizes the principles into a skill system with 9 specialized commands, interactive setup, guard safety nets, noise handling, crash recovery, and command chaining — all running inside Claude Code on any project, any language, any domain.
+**Codex Autoresearch** takes that proof and asks: *what if this worked for everything?* It generalizes the principles into a skill system with 9 specialized commands, interactive setup, guard safety nets, noise handling, crash recovery, and command chaining — all running inside Codex CLI on any project, any language, any domain.
 
 Same philosophy. Same loop. Radically different scope.
 
@@ -535,6 +534,6 @@ Same philosophy. Same loop. Radically different scope.
 
 <div align="center">
 
-**[Claude Autoresearch](https://github.com/uditgoenka/autoresearch)** | **[Karpathy's Autoresearch](https://github.com/karpathy/autoresearch)** | **[Guide](guide/)** | **[Examples](guide/examples-by-domain.md)**
+**[Codex Autoresearch](https://github.com/uditgoenka/autoresearch)** | **[Karpathy's Autoresearch](https://github.com/karpathy/autoresearch)** | **[Guide](guide/)** | **[Examples](guide/examples-by-domain.md)**
 
 </div>

@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Plan"
+  short_description: "Turn a goal into a runnable autoresearch config"
+  default_prompt: "Build an autoresearch plan for this repository and validate the verify command."

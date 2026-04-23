@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Ship"
+  short_description: "Prepare, dry-run, ship, and verify deliverables"
+  default_prompt: "Run the autoresearch ship workflow for the current repository."

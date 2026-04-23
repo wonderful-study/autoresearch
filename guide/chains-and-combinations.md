@@ -252,7 +252,7 @@ Goal: Investigate intermittent 500 errors
 3. Consensus: ranked hypothesis queue (e.g., connection pool 60%, race condition 25%, infra 15%)
 4. Debug loop tests hypotheses in priority order — finds root cause in 2-4 iterations instead of 10+
 
-**Without predict:** Claude guesses → tests → wrong → guesses again → 10 iterations to root cause.
+**Without predict:** Codex guesses → tests → wrong → guesses again → 10 iterations to root cause.
 **With predict:** 5 experts debate → ranked hypotheses → debug tests in order → 2-3 iterations to root cause.
 
 **Time estimate:** Predict phase (~5 min) + 5-10 debug iterations ~ 20 minutes total

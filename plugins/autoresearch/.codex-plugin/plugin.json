@@ -1,0 +1,45 @@
+{
+  "name": "autoresearch",
+  "version": "1.9.0",
+  "description": "Autonomous improvement engine for Codex CLI. Runs modify-verify-keep/discard loops, debugging, fixing, security review, shipping, scenario generation, prediction, learning, and reasoning workflows.",
+  "author": {
+    "name": "Udit Goenka",
+    "url": "https://github.com/uditgoenka"
+  },
+  "homepage": "https://github.com/uditgoenka/autoresearch",
+  "repository": "https://github.com/uditgoenka/autoresearch",
+  "license": "MIT",
+  "keywords": [
+    "autonomous",
+    "iteration",
+    "optimization",
+    "debugging",
+    "security-audit",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Autoresearch",
+    "shortDescription": "Goal-directed iteration workflows for Codex",
+    "longDescription": "Bring Karpathy-style autoresearch loops into Codex CLI with explicit skills and slash commands for optimization, planning, debugging, fixing, security auditing, shipping, scenario generation, prediction, documentation, and adversarial reasoning.",
+    "developerName": "Udit Goenka",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/uditgoenka/autoresearch",
+    "privacyPolicyURL": "https://github.com/uditgoenka/autoresearch",
+    "termsOfServiceURL": "https://github.com/uditgoenka/autoresearch",
+    "defaultPrompt": [
+      "Run autoresearch to improve test coverage in this repo",
+      "Use autoresearch to debug and fix failing checks",
+      "Run autoresearch security and ship-readiness workflows"
+    ],
+    "brandColor": "#0B5FFF",
+    "composerIcon": "./assets/autoresearch.svg",
+    "logo": "./assets/autoresearch.svg",
+    "screenshots": []
+  }
+}

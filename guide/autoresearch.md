@@ -2,7 +2,7 @@
 
 ## What It Does
 
-`/autoresearch` is the core command. It runs an autonomous modify → verify → keep/discard loop indefinitely (or for N iterations when bounded). You give it a goal, a scope of files it can touch, a shell command that outputs a numeric metric, and an optional guard that must stay green. Claude then picks the highest-impact change it can make, commits it, measures the result, and either keeps the improvement or reverts the commit — repeating until the goal is met or iterations are exhausted. It learns from its own history: what worked in earlier iterations informs what it tries next. The result is compounding, documented progress with every change on a clean git branch you can inspect, cherry-pick, or roll back at any time.
+`/autoresearch` is the core command. It runs an autonomous modify → verify → keep/discard loop indefinitely (or for N iterations when bounded). You give it a goal, a scope of files it can touch, a shell command that outputs a numeric metric, and an optional guard that must stay green. Codex then picks the highest-impact change it can make, commits it, measures the result, and either keeps the improvement or reverts the commit — repeating until the goal is met or iterations are exhausted. It learns from its own history: what worked in earlier iterations informs what it tries next. The result is compounding, documented progress with every change on a clean git branch you can inspect, cherry-pick, or roll back at any time.
 
 ---
 
@@ -11,7 +11,7 @@
 ```
 /autoresearch
 Goal:       <what you want to improve>
-Scope:      <file globs Claude can modify>
+Scope:      <file globs Codex can modify>
 Metric:     <what number to track> (<direction>)
 Verify:     <shell command whose output contains the metric>
 Guard:      <optional command that must always pass>
@@ -25,9 +25,9 @@ All fields except `Goal` are optional when context is obvious, but providing all
 | Field | Required | Description |
 |-------|----------|-------------|
 | `Goal` | Yes | Plain-language description of the target. Include a concrete number when possible ("to 90%", "below 200KB"). |
-| `Scope` | Recommended | Glob patterns for files Claude may read and modify. Multiple globs separated by commas. Omit to allow full repo access. |
+| `Scope` | Recommended | Glob patterns for files Codex may read and modify. Multiple globs separated by commas. Omit to allow full repo access. |
 | `Metric` | Recommended | The number being tracked. Append `(higher is better)` or `(lower is better)` to set direction. |
-| `Verify` | Recommended | Shell command whose stdout contains the metric value. Claude parses the number from output automatically. |
+| `Verify` | Recommended | Shell command whose stdout contains the metric value. Codex parses the number from output automatically. |
 | `Guard` | Optional | Shell command that must exit 0 after every kept change. Failures trigger rework before the change is accepted. |
 | `Iterations` | Optional | Integer. Omit for unlimited. Add when you want a time-boxed sprint or CI-safe run. |
 
@@ -35,7 +35,7 @@ All fields except `Goal` are optional when context is obvious, but providing all
 
 ## What Happens During Each Iteration
 
-1. Claude reads the codebase, git history, and log of past iteration results
+1. Codex reads the codebase, git history, and log of past iteration results
 2. Picks the highest-impact change based on what worked (and what failed) before
 3. Makes ONE atomic change — explainable in one sentence
 4. Commits it so rollback is clean
@@ -63,7 +63,7 @@ Metric: coverage % (higher is better)
 Verify: npm test -- --coverage | grep "All files"
 ```
 
-Claude adds tests one at a time. Each iteration: write test → run coverage → keep if % went up → discard if not → repeat until 90% or stopped.
+Codex adds tests one at a time. Each iteration: write test → run coverage → keep if % went up → discard if not → repeat until 90% or stopped.
 
 ---
 
@@ -94,7 +94,7 @@ Verify: npm run build 2>&1 | grep "First Load JS"
 Guard: npm test
 ```
 
-Claude tries tree-shaking unused imports, lazy-loading routes, replacing heavy libraries, code-splitting — one change per iteration. Guard ensures tests stay green throughout.
+Codex tries tree-shaking unused imports, lazy-loading routes, replacing heavy libraries, code-splitting — one change per iteration. Guard ensures tests stay green throughout.
 
 ---
 
@@ -109,7 +109,7 @@ Metric: failure count across 5 runs (lower is better)
 Verify: for i in {1..5}; do npm test 2>&1; done | grep -c "FAIL"
 ```
 
-Runs the full suite 5 times per iteration, counts failures. Claude targets the test with the highest flake rate each iteration.
+Runs the full suite 5 times per iteration, counts failures. Codex targets the test with the highest flake rate each iteration.
 
 ---
 
@@ -140,7 +140,7 @@ Verify: grep -r ":\s*any" src/ --include="*.ts" | wc -l
 Guard: tsc --noEmit
 ```
 
-Claude replaces one `any` per iteration with a proper type. Guard ensures no new type errors are introduced while fixing existing ones.
+Codex replaces one `any` per iteration with a proper type. Guard ensures no new type errors are introduced while fixing existing ones.
 
 ---
 
@@ -155,7 +155,7 @@ Metric: LOC count (lower is better)
 Verify: npm test && find src/services -name "*.ts" | xargs wc -l | tail -1
 ```
 
-The `Verify` command runs tests first — if tests fail, the output won't contain a clean LOC number, so Claude treats it as a guard failure. Elegant double-duty.
+The `Verify` command runs tests first — if tests fail, the output won't contain a clean LOC number, so Codex treats it as a guard failure. Elegant double-duty.
 
 ---
 
@@ -170,7 +170,7 @@ Verify: npx lighthouse http://localhost:3000 --output=json --quiet | jq '.catego
 Guard: npx playwright test
 ```
 
-Claude iterates on image optimization, render-blocking resources, layout shifts, and font loading — keeping e2e tests passing via Guard.
+Codex iterates on image optimization, render-blocking resources, layout shifts, and font loading — keeping e2e tests passing via Guard.
 
 ---
 
@@ -187,7 +187,7 @@ Metric: coverage % (higher is better)
 Verify: pytest --cov=app --cov-report=term-missing 2>&1 | grep "TOTAL" | awk '{print $4}'
 ```
 
-Each iteration adds one test function. Claude prioritizes uncovered branches visible in `--cov-report=term-missing` output.
+Each iteration adds one test function. Codex prioritizes uncovered branches visible in `--cov-report=term-missing` output.
 
 ---
 
@@ -203,7 +203,7 @@ Verify: python manage.py test --settings=settings.test 2>&1 | grep "queries" | a
 Guard: pytest
 ```
 
-Claude adds `select_related`, `prefetch_related`, and query annotations — one queryset fix per iteration. Guard keeps all existing tests passing.
+Codex adds `select_related`, `prefetch_related`, and query annotations — one queryset fix per iteration. Guard keeps all existing tests passing.
 
 ---
 
@@ -236,7 +236,7 @@ Metric: coverage % (higher is better)
 Verify: go test ./... -coverprofile=cover.out && go tool cover -func=cover.out | grep "total:" | awk '{print $3}'
 ```
 
-Generates test cases for uncovered functions, one per iteration. The `coverprofile` approach gives Claude precise line-level data to target.
+Generates test cases for uncovered functions, one per iteration. The `coverprofile` approach gives Codex precise line-level data to target.
 
 ---
 
@@ -252,7 +252,7 @@ Verify: go build -o /tmp/bench ./cmd/server && ls -la /tmp/bench | awk '{print $
 Guard: go test ./...
 ```
 
-Claude tries `-ldflags="-s -w"`, removing unused dependencies, dead code elimination — measuring each change against a fresh binary build.
+Codex tries `-ldflags="-s -w"`, removing unused dependencies, dead code elimination — measuring each change against a fresh binary build.
 
 ---
 
@@ -285,7 +285,7 @@ Metric: coverage % (higher is better)
 Verify: cargo tarpaulin --out Stdout 2>&1 | grep "coverage" | awk '{print $2}'
 ```
 
-Uses `cargo-tarpaulin` for line coverage. Claude adds `#[test]` functions targeting uncovered match arms and error paths first.
+Uses `cargo-tarpaulin` for line coverage. Codex adds `#[test]` functions targeting uncovered match arms and error paths first.
 
 ---
 
@@ -301,7 +301,7 @@ Verify: cargo build --timings 2>&1 | grep "Finished" | awk '{print $2}'
 Guard: cargo test
 ```
 
-Claude targets large monolithic modules, unnecessary proc-macro dependencies, and feature flag bloat — splitting or removing one thing per iteration.
+Codex targets large monolithic modules, unnecessary proc-macro dependencies, and feature flag bloat — splitting or removing one thing per iteration.
 
 ---
 
@@ -317,7 +317,7 @@ Verify: cargo bench -- --output-format bencher 2>&1 | grep "bench:" | awk '{prin
 Guard: cargo test
 ```
 
-Criterion's statistical output gives Claude stable baselines to compare against. Each iteration targets one allocating path or clone call.
+Criterion's statistical output gives Codex stable baselines to compare against. Each iteration targets one allocating path or clone call.
 
 ---
 
@@ -334,7 +334,7 @@ Metric: readability score + personalization token count (higher is better)
 Verify: node scripts/score-email-template.js
 ```
 
-Claude iterates on subject lines, opening hooks, CTAs, and personalization variables — keeping changes that score higher on your custom scorer.
+Codex iterates on subject lines, opening hooks, CTAs, and personalization variables — keeping changes that score higher on your custom scorer.
 
 ---
 
@@ -348,7 +348,7 @@ Metric: SEO score from audit tool (higher is better)
 Verify: node scripts/seo-score.js --file content/blog/target-post.md
 ```
 
-Claude tweaks headings, keyword density, meta descriptions, and internal links — one change per iteration. Run unlimited overnight or add `Iterations: 25` for a focused session.
+Codex tweaks headings, keyword density, meta descriptions, and internal links — one change per iteration. Run unlimited overnight or add `Iterations: 25` for a focused session.
 
 ---
 
@@ -363,7 +363,7 @@ Metric: readability_score * 0.7 + keyword_density_score * 0.3 (higher is better)
 Verify: node scripts/content-score.js content/landing-pages/ai-automation.md
 ```
 
-Composite metric lets you weight readability more than keyword density. Claude respects the weighting when deciding which changes to keep.
+Composite metric lets you weight readability more than keyword density. Codex respects the weighting when deciding which changes to keep.
 
 ---
 
@@ -386,12 +386,12 @@ Each iteration targets one problematic phrase, gendered word, or vague requireme
 
 ### How Guard Works
 
-The Guard is a shell command that must exit 0 after every change Claude wants to keep. It runs separately from `Verify`. `Verify` measures the metric you are optimizing. Guard protects something else — typically your test suite, type checker, or linter.
+The Guard is a shell command that must exit 0 after every change Codex wants to keep. It runs separately from `Verify`. `Verify` measures the metric you are optimizing. Guard protects something else — typically your test suite, type checker, or linter.
 
 **Recovery flow when guard fails:**
 
 1. Metric improves, but guard fails
-2. Claude reverts the change immediately (`git revert`)
+2. Codex reverts the change immediately (`git revert`)
 3. Reads guard output to understand what broke
 4. Reworks the optimization to avoid the regression (max 2 attempts)
 5. If both rework attempts fail → discard entirely and move to the next iteration
@@ -409,7 +409,7 @@ Verify: npm run build 2>&1 | grep "gzipped"
 Guard: npm test
 ```
 
-Claude can aggressively remove code to shrink the bundle — the guard catches any removals that break test assertions.
+Codex can aggressively remove code to shrink the bundle — the guard catches any removals that break test assertions.
 
 ### Guard Example 2 — Performance without breaking types
 
@@ -474,27 +474,27 @@ Playwright e2e tests catch visual regressions and interaction breaks that unit t
 
 ### Tips
 
-**Write a tight Verify command.** The command should output exactly one number (or a line containing one number). Noisy output is fine — Claude parses it — but ambiguous output with multiple numbers causes misreadings. Use `grep`, `awk`, or `jq` to isolate the value.
+**Write a tight Verify command.** The command should output exactly one number (or a line containing one number). Noisy output is fine — Codex parses it — but ambiguous output with multiple numbers causes misreadings. Use `grep`, `awk`, or `jq` to isolate the value.
 
-**Start with a baseline.** Run your `Verify` command manually before starting the loop. Know your starting number. It gives Claude a reference and lets you sanity-check the first iteration result.
+**Start with a baseline.** Run your `Verify` command manually before starting the loop. Know your starting number. It gives Codex a reference and lets you sanity-check the first iteration result.
 
 **Use Guard liberally.** If you are optimizing anything other than test pass/fail rate, add `Guard: npm test`. The cost is one extra test run per iteration. The benefit is a loop that never regresses.
 
-**Bounded first, unbounded after.** Run `Iterations: 10` to see how the loop behaves on your codebase — what changes Claude picks, how large the deltas are. If it looks good, remove the limit.
+**Bounded first, unbounded after.** Run `Iterations: 10` to see how the loop behaves on your codebase — what changes Codex picks, how large the deltas are. If it looks good, remove the limit.
 
-**Scope tightly.** A narrow scope (e.g., `src/api/**/*.ts`) gives Claude clearer constraints than `src/**`. Broader scopes are fine for unbounded overnight runs but can lead to surprising changes in bounded sprints.
+**Scope tightly.** A narrow scope (e.g., `src/api/**/*.ts`) gives Codex clearer constraints than `src/**`. Broader scopes are fine for unbounded overnight runs but can lead to surprising changes in bounded sprints.
 
 **Commit history is the output.** Every kept change is a commit. After a run, `git log` shows exactly what changed and why. `git revert <hash>` undoes any single change cleanly.
 
 ### Anti-Patterns
 
-**Don't set a Verify that can't parse to a number.** If `npm run build` exits non-zero on errors and you pipe it with `grep`, a build failure produces no output — Claude stalls. Add `2>&1` and test the command standalone first.
+**Don't set a Verify that can't parse to a number.** If `npm run build` exits non-zero on errors and you pipe it with `grep`, a build failure produces no output — Codex stalls. Add `2>&1` and test the command standalone first.
 
 **Don't use a Guard that takes 10+ minutes.** If your full e2e suite takes 15 minutes, use a fast smoke test as Guard and run the full suite separately. A slow guard makes each iteration prohibitively expensive.
 
-**Don't omit Metric direction.** Without `(higher is better)` or `(lower is better)`, Claude guesses. Always be explicit.
+**Don't omit Metric direction.** Without `(higher is better)` or `(lower is better)`, Codex guesses. Always be explicit.
 
-**Don't set conflicting Goal and Metric.** If Goal says "increase coverage" but Metric says "lower is better", Claude will optimize in the wrong direction. Keep them consistent.
+**Don't set conflicting Goal and Metric.** If Goal says "increase coverage" but Metric says "lower is better", Codex will optimize in the wrong direction. Keep them consistent.
 
 **Don't run unbounded in CI without a timeout.** Wrap with a CI timeout or use `Iterations: N`. Unbounded loops in CI pipelines can run until the job limit is hit.
 

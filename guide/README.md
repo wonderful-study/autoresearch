@@ -18,8 +18,7 @@ Everything you need to master autonomous iteration — from first run to advance
 ## Quick Start
 
 ```bash
-/plugin marketplace add uditgoenka/autoresearch
-/plugin install autoresearch@autoresearch
+/plugins
 /autoresearch
 ```
 

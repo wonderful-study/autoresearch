@@ -1,0 +1,5 @@
+allow_implicit_invocation: false
+interface:
+  display_name: "Autoresearch Predict"
+  short_description: "Run multi-persona pre-analysis before action"
+  default_prompt: "Run the autoresearch predict workflow on this repository."

@@ -82,7 +82,7 @@ If no domain is given, `:scenario` infers from context (code files → software,
 | `standard` | 25 | All 12 dimensions | Most features and APIs (recommended default) |
 | `deep` | 50+ | All 12 dimensions, multiple passes | Critical paths, security audits, launch prep |
 
-For `deep`, set `Iterations: 50` or higher explicitly. Claude will continue until the count is reached.
+For `deep`, set `Iterations: 50` or higher explicitly. Codex will continue until the count is reached.
 
 ---
 
@@ -107,7 +107,7 @@ Default format is `use-cases` when unspecified.
 /autoresearch:scenario
 ```
 
-Claude asks 4-8 adaptive questions — scenario description, domain, depth, focus area, output format. Minimum input needed: just run the command and answer the prompts.
+Codex asks 4-8 adaptive questions — scenario description, domain, depth, focus area, output format. Minimum input needed: just run the command and answer the prompts.
 
 ---
 
@@ -245,7 +245,7 @@ Covers: JavaScript-rendered content, infinite scroll pagination, session cookie 
 
 ## Adaptive Setup
 
-When you run `:scenario` without full context, Claude generates 4-8 questions tailored to what you provided:
+When you run `:scenario` without full context, Codex generates 4-8 questions tailored to what you provided:
 
 **If you give nothing:**
 1. What is the scenario you want to explore?
@@ -254,13 +254,13 @@ When you run `:scenario` without full context, Claude generates 4-8 questions ta
 4. What output format? (use-cases / user-stories / test-scenarios / threat-scenarios)
 
 **If you give a scenario but no domain:**
-Claude infers from keywords, then asks to confirm and requests depth + format.
+Codex infers from keywords, then asks to confirm and requests depth + format.
 
 **If you give domain + scenario:**
-Claude asks depth, format, and whether to focus on a specific dimension family.
+Codex asks depth, format, and whether to focus on a specific dimension family.
 
 **If you give everything:**
-Claude starts immediately — no questions asked.
+Codex starts immediately — no questions asked.
 
 The question set is generated fresh each time, not from a fixed template. Questions adapt based on what's ambiguous in your context.
 
@@ -385,11 +385,11 @@ A summary table at the top of `scenario-results.md` is updated each iteration wi
 
 **Use `--domain security` for anything with auth, money, or PII.** The abuse and permission dimensions are weighted higher, and the output language maps directly to threat-model vocabulary your security team recognizes.
 
-**For business process scenarios**, give Claude one representative happy-path walkthrough in the scenario description. The richer the seed, the more specific the edge cases generated.
+**For business process scenarios**, give Codex one representative happy-path walkthrough in the scenario description. The richer the seed, the more specific the edge cases generated.
 
 **Scenario output feeds naturally into debug.** After a `:scenario` run, copy the highest-severity situations into the `Symptom:` field of `/autoresearch:debug` to prioritize bug-hunting exactly where the risk is.
 
-**`--scope` is not filtering — it's focusing.** When you set `--scope src/payments/**`, Claude reads those files to ground scenario generation in the actual implementation constraints, producing situations that could realistically occur in your specific codebase rather than generic ones.
+**`--scope` is not filtering — it's focusing.** When you set `--scope src/payments/**`, Codex reads those files to ground scenario generation in the actual implementation constraints, producing situations that could realistically occur in your specific codebase rather than generic ones.
 
 ---
 

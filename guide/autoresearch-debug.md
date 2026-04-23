@@ -90,13 +90,13 @@ Use `--severity high` to surface only High/Critical findings. Default logs all l
 
 ## Examples
 
-### 1. Interactive (no args) — Claude asks what's broken
+### 1. Interactive (no args) — Codex asks what's broken
 
 ```
 /autoresearch:debug
 ```
 
-Claude runs tests, lint, and typecheck, then asks for any additional context before building the hypothesis queue.
+Codex runs tests, lint, and typecheck, then asks for any additional context before building the hypothesis queue.
 
 ---
 

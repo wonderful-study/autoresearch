@@ -13,7 +13,7 @@ Guards prevent regressions while you optimize a different metric. Set a Guard wh
 ### Guard recovery flow
 
 1. Metric improves, but guard command fails
-2. Claude reverts the change immediately
+2. Codex reverts the change immediately
 3. Reads guard output to understand what broke
 4. Reworks the optimization to avoid the regression (max 2 attempts)
 5. If 2 attempts fail — discard and move on
@@ -67,7 +67,7 @@ Guard: mypy app/ --strict
 For complex metrics that can't be expressed as a one-liner, write a dedicated script.
 
 **Rules for verify scripts:**
-- Must output a parseable number (Claude extracts it mechanically)
+- Must output a parseable number (Codex extracts it mechanically)
 - Must be deterministic — same input produces same output every time
 - Must be fast — under 30 seconds; faster = more experiments per session
 - Must exit 0 on success, non-zero on failure
@@ -158,7 +158,7 @@ sys.exit(0)
 
 ## Using with MCP Servers
 
-Any MCP server configured in Claude Code is available during the loop. This enables real-time data-driven iteration — Claude can query live databases, analytics platforms, or external APIs as part of each verify step.
+Any MCP server configured in Codex CLI is available during the loop. This enables real-time data-driven iteration — Codex can query live databases, analytics platforms, or external APIs as part of each verify step.
 
 ### Database-aware optimization
 
@@ -220,7 +220,7 @@ Verify: Use MCP HTTP tool to hit each endpoint, validate response schema + timin
 
 ## Combining with APIs
 
-Beyond MCP, Claude calls APIs directly via scripts in the verify step.
+Beyond MCP, Codex calls APIs directly via scripts in the verify step.
 
 ### GitHub API integration (using gh CLI)
 
@@ -279,11 +279,11 @@ process.exit(hasErrors ? 1 : 0);
 
 ---
 
-## Claude Code Patterns
+## Codex CLI Patterns
 
-### Using with other Claude Code skills
+### Using with other Codex CLI skills
 
-Autoresearch runs inside your Claude Code session — it has access to all skills, MCP tools, and file context. Common combinations:
+Autoresearch runs inside your Codex CLI session — it has access to all skills, MCP tools, and file context. Common combinations:
 
 - Run `/autoresearch:plan` first to validate your verify command before committing to a long loop
 - Chain commands: `debug → fix → ship`, `plan → loop → security → ship`
@@ -296,22 +296,22 @@ Autoresearch runs inside your Claude Code session — it has access to all skill
 | Run Overnight | Large goal, no time pressure | No `Iterations:` limit |
 | Controlled Sprint | 30-min focused session | `Iterations: 10-15` |
 | Compound Improvements | Many small wins compound | Start easiest first |
-| Explore and Exploit | Stuck, need bold experiments | Prompt Claude to try radical approaches |
+| Explore and Exploit | Stuck, need bold experiments | Prompt Codex to try radical approaches |
 | Refactor Without Breaking | Safe LOC reduction | Pair metric with Guard |
 | Progressive Hardening | Multi-phase quality gates | Chain goals in prompt |
 
 ### Workspace configuration
 
-Autoresearch reads your Claude Code settings automatically. No additional configuration file is required.
+Autoresearch reads your Codex CLI settings automatically. No additional configuration file is required.
 
 **Global installation** (available in every project):
 
 ```bash
-# Install once via Claude Code skill system
+# Install once via Codex CLI skill system
 # See INSTALLATION.md in the autoresearch skill directory
 ```
 
-**Project-level** — add `/autoresearch` to `.claude/` in your repo so the team shares consistent commands without individual installation.
+**Project-level** — keep `plugins/autoresearch/` and `.agents/plugins/marketplace.json` in the repo so the team can install the same plugin through `/plugins`.
 
 ---
 
@@ -506,7 +506,7 @@ autoresearch:
 | **Lighthouse** | `npx lighthouse http://localhost:3000 --output=json \| jq '.categories.performance.score * 100'` | Score | higher |
 | **API latency** | `wrk -t2 -c10 -d10s http://localhost:3000/api 2>&1 \| grep 'Avg Lat' \| awk '{print $2}'` | ms | lower |
 
-Each command outputs a single number. Claude parses this to make keep/discard decisions.
+Each command outputs a single number. Codex parses this to make keep/discard decisions.
 
 ### TSV format specification
 
@@ -532,11 +532,11 @@ iteration  commit   metric  delta   guard  status    description
 
 ### How to read results logs
 
-Claude reads the full log at the start of each iteration. It uses the history to avoid repeating failed approaches and to combine successful patterns.
+Codex reads the full log at the start of each iteration. It uses the history to avoid repeating failed approaches and to combine successful patterns.
 
 ### Progress summaries
 
-Every 10 iterations, Claude prints an inline summary:
+Every 10 iterations, Codex prints an inline summary:
 
 ```
 === Progress (iteration 20) ===
@@ -571,7 +571,7 @@ Every second saved in verification is an extra experiment per minute. Optimize t
 
 ### Scope narrowing for focused runs
 
-Narrow scope = faster context load = bolder experiments. Claude reads all in-scope files each iteration — keep scope tight.
+Narrow scope = faster context load = bolder experiments. Codex reads all in-scope files each iteration — keep scope tight.
 
 ```
 # Too broad
@@ -618,7 +618,7 @@ Autonomy succeeds through intentional constraint, not despite it. A narrow scope
 
 ### 2. Strategy != Tactics
 
-Humans set direction (what to improve). Agents execute iterations (how to improve it). Mixing the two — asking Claude to also choose the goal — produces unfocused loops.
+Humans set direction (what to improve). Agents execute iterations (how to improve it). Mixing the two — asking Codex to also choose the goal — produces unfocused loops.
 
 | Strategic (Human) | Tactical (Agent) |
 |---|---|
@@ -628,7 +628,7 @@ Humans set direction (what to improve). Agents execute iterations (how to improv
 
 ### 3. Mechanical Metrics Only
 
-The loop breaks if the metric requires judgment. Claude cannot act on "looks cleaner" — it needs a number.
+The loop breaks if the metric requires judgment. Codex cannot act on "looks cleaner" — it needs a number.
 
 Good: `npm test -- --coverage | grep "All files"` outputs `87.3%`
 
@@ -646,11 +646,11 @@ Verification speed determines experiment throughput. A 30-second verify command 
 
 ### 5. Iteration Cost Shapes Behavior
 
-Cheap iteration encourages bold exploration and many experiments. Expensive iteration forces Claude to be conservative. Optimize verify speed to unlock better results.
+Cheap iteration encourages bold exploration and many experiments. Expensive iteration forces Codex to be conservative. Optimize verify speed to unlock better results.
 
 ### 6. Git as Memory
 
-Every successful change is committed before verification. Failures are reverted. The git log becomes Claude's research journal — enabling causality tracking, stacking wins, and pattern learning across iterations.
+Every successful change is committed before verification. Failures are reverted. The git log becomes Codex's research journal — enabling causality tracking, stacking wins, and pattern learning across iterations.
 
 ### 7. Honest Limitations
 
@@ -693,7 +693,7 @@ A: Run `/autoresearch:plan` — it analyzes your codebase, suggests metrics, and
 A: Yes. Any language, framework, or domain. If you can measure it with a command, autoresearch can optimize it.
 
 **Q: How do I stop the loop?**
-A: `Ctrl+C` or add `Iterations: N` for bounded runs. Claude commits before verifying, so your last successful state is always in git.
+A: `Ctrl+C` or add `Iterations: N` for bounded runs. Codex commits before verifying, so your last successful state is always in git.
 
 **Q: Can I use this for non-code tasks?**
 A: Absolutely. Sales emails, marketing copy, HR policies, research papers — anything with a measurable metric works.
@@ -705,10 +705,10 @@ A: No. It's read-only by default. Use `--fix` to opt into auto-remediation of co
 A: Yes. Run `debug → fix → ship`, or `plan → loop → ship`, or `scenario → debug → fix`. Each command's output feeds the next.
 
 **Q: What's the difference between Metric and Guard?**
-A: Metric = "did we improve?" (the goal). Guard = "did we break anything?" (safety net). If metric improves but guard fails, Claude reworks the change.
+A: Metric = "did we improve?" (the goal). Guard = "did we break anything?" (safety net). If metric improves but guard fails, Codex reworks the change.
 
 **Q: Can I use MCP servers during the loop?**
-A: Yes. Any MCP server configured in Claude Code is available — databases, analytics, APIs, etc.
+A: Yes. Any MCP server configured in Codex CLI is available — databases, analytics, APIs, etc.
 
 **Q: How many iterations should I run?**
 A: 5-10 for targeted fixes. 15-25 for moderate improvements. 50+ for deep optimization. Unlimited for overnight runs.
@@ -716,7 +716,7 @@ A: 5-10 for targeted fixes. 15-25 for moderate improvements. 50+ for deep optimi
 **Q: Does it work in CI/CD?**
 A: Yes. Use `--fail-on` (security command) or bounded iterations with `Iterations: N`. See [CI/CD Integration](#cicd-integration).
 
-**Q: What if Claude makes things worse?**
+**Q: What if Codex makes things worse?**
 A: Every change is committed before verification. If worse, it's instantly `git revert`ed. Your codebase is always in a known-good state.
 
 **Q: Can I run it overnight?**
@@ -743,7 +743,7 @@ Yes. The scouting phase detects workspace configs (`package.json` workspaces, `l
 
 ### What's the validation-fix loop?
 
-After generating docs, Claude runs `validate-docs.cjs` (if it exists) to check code references, internal links, and config keys. If any fail, it re-spawns the docs-manager with specific issues to fix — up to 3 retries. This prevents hallucinated code references that plague one-shot doc generators.
+After generating docs, Codex runs `validate-docs.cjs` (if it exists) to check code references, internal links, and config keys. If any fail, it re-spawns the docs-manager with specific issues to fix — up to 3 retries. This prevents hallucinated code references that plague one-shot doc generators.
 
 ---
 
@@ -774,7 +774,7 @@ After generating docs, Claude runs `validate-docs.cjs` (if it exists) to check c
 
 ### When stuck — 5+ consecutive discards
 
-If Claude accumulates 5 or more consecutive discards, it automatically escalates strategy:
+If Codex accumulates 5 or more consecutive discards, it automatically escalates strategy:
 
 1. Re-reads ALL in-scope files from scratch
 2. Re-reads the original goal statement
