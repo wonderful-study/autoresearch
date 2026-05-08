@@ -397,9 +397,9 @@ jobs:
       - name: Run Security Audit
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            claude -p "/autoresearch:security --diff --fail-on critical --iterations 5"
+            codex exec "/autoresearch:security --diff --fail-on critical --iterations 5"
           else
-            claude -p "/autoresearch:security --fail-on high --iterations 15"
+            codex exec "/autoresearch:security --fail-on high --iterations 15"
           fi
 
       - name: Upload Security Report
@@ -426,7 +426,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Audit and auto-fix Critical/High
         run: |
-          claude -p "/autoresearch:security --diff --fix --fail-on critical --iterations 10"
+          codex exec "/autoresearch:security --diff --fix --fail-on critical --iterations 10"
       - name: Commit fixes if any
         run: |
           git diff --quiet || (git add -A && git commit -m "fix: auto-remediate security findings")

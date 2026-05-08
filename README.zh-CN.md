@@ -32,8 +32,8 @@
 
 当前仓库包含：
 
-- `10` 个 slash commands
-- `10` 个显式 skills
+- `11` 个 slash-style commands
+- `11` 个显式 workflow skills
 - 一套共享 workflow references
 - 一整套 guide、场景 walkthrough 和可复制示例
 
@@ -84,6 +84,7 @@ $autoresearch-scenario
 $autoresearch-predict
 $autoresearch-learn
 $autoresearch-reason
+$autoresearch-probe
 ```
 
 如果你只是想“最快上手”，优先用 slash commands。
@@ -103,7 +104,7 @@ $autoresearch-reason
 - [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json)
 - [`plugins/autoresearch`](plugins/autoresearch)
 
-安装完成后，你就能直接使用上面的 10 个命令。
+安装完成后，你就能直接使用上面的 11 个命令。
 
 ### 方式 B：手动复制到 home-local 路径
 

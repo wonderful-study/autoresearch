@@ -218,6 +218,20 @@ Finding Proof Structure:
 
 Do NOT report findings without supporting code evidence.
 
+**Credential hygiene in finding output (mandatory):**
+
+Findings, PoCs, attack scenarios, and reproduction commands SHOULD NOT contain real secrets even when the secret IS the vulnerability. Always mask before writing to any file:
+
+| Pattern | Mask form |
+|---|---|
+| API keys, JWTs, OAuth tokens | `<REDACTED_TOKEN>` (preserve length class: short/medium/long) |
+| Connection strings with embedded passwords | `protocol://user:<REDACTED_PASSWORD>@host/db` |
+| Environment variable values | reference the var name only: `$DATABASE_URL`, never the value |
+| Private keys, certs | first 8 chars + `<...REDACTED...>` + last 8 chars |
+| Sample request bodies | replace value, keep field name: `{"api_key": "<REDACTED>"}` |
+
+When a finding's reproduction needs real credentials, write the PoC as a *template* the user fills in at runtime — never as a copy-paste-ready command containing the live secret. Reject any draft finding that contains a value matching: a JWT (`eyJ...`), 32+ char hex, AWS key prefixes (`AKIA`, `ASIA`), or known token formats. Re-mask and re-emit.
+
 #### Phase 4: Classify
 
 Assign severity and categories:
@@ -581,7 +595,7 @@ Exit with non-zero code if findings meet or exceed a severity threshold. Designe
 **CI/CD usage:**
 ```bash
 # In GitHub Actions or CI scripts
-claude -p "/autoresearch:security --fail-on critical --iterations 10"
+codex exec "/autoresearch:security --fail-on critical --iterations 10"
 # Exit code 1 if any Critical findings → blocks the pipeline
 ```
 
@@ -627,6 +641,19 @@ After fixes complete, updates the audit folder:
 - Run existing tests after each fix — revert if any test fails
 - Maximum 3 fix attempts per finding, then skip
 - User can combine with `--fail-on` for gated fix: fix first, then gate
+
+### `--chain <targets>` — Downstream Chaining
+
+Chain to downstream tool(s) after the audit completes. Comma-separated for multi-chain. Spaces after commas tolerated.
+
+```
+/autoresearch:security --chain fix
+/autoresearch:security --chain fix,scenario,debug
+```
+
+See **Chain Conversion** section below for how security findings map to each downstream tool.
+
+Note: `--fix` is a shortcut for `--chain fix` (auto-remediation with full fix loop).
 
 ### Combining Flags
 
@@ -688,24 +715,23 @@ jobs:
           fetch-depth: 0  # Full history for delta mode
 
       - name: Install Codex CLI
-        run: npm install -g @anthropic-ai/claude-code
+        run: npm install -g @openai/codex
 
       - name: Install Autoresearch Skill
         run: |
           git clone https://github.com/uditgoenka/autoresearch.git /tmp/autoresearch
-          cp -r /tmp/autoresearch/skills/autoresearch plugins/autoresearch/skills/autoresearch
-          cp -r /tmp/autoresearch/commands/autoresearch plugins/autoresearch/commands
-          cp /tmp/autoresearch/commands/autoresearch.md plugins/autoresearch/commands.md
+          cd /tmp/autoresearch
+          ./scripts/install.sh --codex --local --force
 
       - name: Run Security Audit
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           # Delta mode on PRs, full audit on schedule
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            claude -p "/autoresearch:security --diff --fail-on critical --iterations 5"
+            codex exec "/autoresearch:security --diff --fail-on critical --iterations 5"
           else
-            claude -p "/autoresearch:security --fail-on high --iterations 15"
+            codex exec "/autoresearch:security --fail-on high --iterations 15"
           fi
 
       - name: Upload Security Report
@@ -802,6 +828,115 @@ Each finding gets a `History` tag:
 | Dependency audit fails | Skip, note in report, continue with code analysis |
 | Code too large for context | Focus on files matching attack surface (API, auth, DB) |
 | False positive suspected | Mark as "Possible" confidence, include caveats |
+
+### Chain Conversion
+
+#### `--chain fix`
+
+Each confirmed vulnerability becomes a fix target sorted by STRIDE severity. Only Confirmed Critical and High findings are passed unless `--chain fix` is used explicitly (vs `--fix` which also limits to Confirmed).
+
+```
+/autoresearch:fix
+Scope: {files from findings.md — file:line locations}
+Target: {top Critical vulnerability title}
+From-Security: true
+```
+
+#### `--chain debug`
+
+Investigate findings deeper with empirical testing — validate that code paths are actually reachable and exploitable under real conditions.
+
+```
+/autoresearch:debug
+Scope: {files from confirmed findings}
+Symptom: security audit found {N} vulnerabilities — empirical validation needed
+Hypotheses:
+  H-01 [CRITICAL] {vulnerability title} — {attack vector}
+  H-02 [HIGH] {vulnerability title} — {attack vector}
+```
+
+#### `--chain scenario`
+
+Each confirmed threat becomes a scenario seed for attack simulation and blast radius exploration.
+
+```
+/autoresearch:scenario
+Scenario: {vulnerability title} — {attack description}
+Domain: security
+Depth: standard
+```
+
+#### `--chain predict`
+
+Security findings become the goal for multi-persona swarm impact prediction — "what else might be compromised given these vulnerabilities."
+
+```
+/autoresearch:predict
+Scope: {files from findings.md}
+Goal: predict cascading impact of confirmed vulnerabilities: {comma-separated titles}
+```
+
+#### `--chain plan`
+
+Remediation planning for confirmed vulnerabilities — organize fixes into a structured implementation plan.
+
+```
+/autoresearch:plan
+Goal: remediate confirmed security vulnerabilities
+Source: security/{slug}/recommendations.md
+```
+
+#### `--chain learn`
+
+Security patterns and STRIDE/OWASP findings documented for codebase security awareness.
+
+```
+/autoresearch:learn
+Topic: security vulnerabilities, STRIDE patterns, and OWASP findings
+Source: security/{slug}/findings.md
+```
+
+#### `--chain reason`
+
+Complex mitigations with tradeoffs go through adversarial design refinement before implementation.
+
+```
+/autoresearch:reason
+Task: determine best mitigation strategy for complex security findings
+Evidence: security/{slug}/recommendations.md
+```
+
+#### `--chain ship`
+
+Vulnerabilities become ship gate blockers — CRITICAL/HIGH block shipping, MEDIUM warn.
+
+```
+/autoresearch:ship
+Gate: {FAIL if any Critical/High confirmed findings, WARN if Medium findings exist}
+Blockers: {count of Critical/High confirmed findings}
+```
+
+#### `--chain probe`
+
+Security gaps reveal missing or ambiguous requirements — interrogate what the system was supposed to prevent.
+
+```
+/autoresearch:probe
+Topic: security requirement gaps revealed by: {comma-separated vulnerability titles}
+Source: security/{slug}/findings.md
+```
+
+### Multi-Chain Execution
+
+`--chain fix,scenario,ship` executes sequentially:
+
+1. Write `handoff.json` after security audit completes
+2. Launch `fix` with chain conversion above
+3. After `fix` completes, convert fix results + `handoff.json` → `scenario` context
+4. After `scenario` completes, convert scenario findings → `ship` gate
+5. Each stage's output feeds the next via updated `handoff.json`
+
+**Empirical evidence rule:** Downstream loop results ALWAYS override upstream security audit findings. If debug or fix disproves a security finding, the empirical result wins — mark finding as `DISPROVEN by {tool} loop` in the security report.
 
 ## Anti-Patterns
 

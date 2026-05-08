@@ -56,9 +56,25 @@ cp -R autoresearch/plugins/autoresearch ~/plugins/autoresearch
 
 If you already have `~/.agents/plugins/marketplace.json`, merge the `autoresearch` entry instead of overwriting the whole file.
 
+### Option D — Guided Installer
+
+```bash
+git clone https://github.com/uditgoenka/autoresearch.git
+cd autoresearch
+./scripts/install.sh --codex --global
+```
+
+Or manually:
+```bash
+cp -r autoresearch/.agents/skills/autoresearch ~/.agents/skills/autoresearch
+```
+
+> **Codex uses `$` mention syntax:** Type `$autoresearch` in your prompt, or `$autoresearch plan`, `$autoresearch debug`, etc. Codex discovers skills automatically from `.agents/skills/` directories.
+
 ### Verify Installation
 
 Type `/autoresearch` in Codex CLI. If Codex inspects the repo and then asks for any missing goal, scope, metric, or verify details, you're ready.
+You can also type `$autoresearch` or run `/skills` to see it listed after a global skill install.
 
 ### Complete Initialization (Iteration #0 — Baseline)
 
@@ -309,6 +325,9 @@ A: Yes. Any MCP server configured in Codex CLI is available — databases, analy
 
 **Q: How many iterations should I run?**
 A: Depends on scope. 5-10 for targeted fixes. 15-25 for moderate improvements. 50+ for deep optimization. Unlimited for overnight runs.
+
+**Q: Does it work with OpenAI Codex?**
+A: Yes. Run `./scripts/install.sh --codex --global` or copy `.agents/skills/autoresearch/` to `~/.agents/skills/`. Use `$autoresearch` mention syntax to invoke.
 
 **Q: Does it work in CI/CD?**
 A: Yes. Use `--fail-on` (security) or bounded iterations. See [Advanced Patterns](advanced-patterns.md).

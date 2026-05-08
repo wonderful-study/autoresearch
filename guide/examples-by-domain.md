@@ -725,21 +725,21 @@ Invoke autoresearch from the command line for DevOps workflows:
 
 ```bash
 # Interactive mode — Codex guides the optimization
-claude "/autoresearch
+codex exec "/autoresearch
 Goal: Reduce CI/CD pipeline from 12min to 5min
 Scope: .github/workflows/*.yml, Dockerfile, docker-compose.yml
 Verify: gh run list --limit 1 --json durationMs --jq '.[0].durationMs / 60000'
 Iterations: 15"
 
 # Non-interactive (CI/CD mode) — runs headless
-claude --print "/autoresearch
+codex exec "/autoresearch
 Goal: Reduce Docker build time
 Scope: Dockerfile
 Verify: docker build . 2>&1 | grep -oP 'total [\d.]+s' | grep -oP '[\d.]+'
 Iterations: 10"
 
 # With guard to prevent breaking deployments
-claude "/autoresearch
+codex exec "/autoresearch
 Goal: Optimize Kubernetes resource usage
 Scope: k8s/*.yaml
 Verify: kubectl top pods -n prod --no-headers | awk '{sum+=\$3} END {print sum}'
@@ -1125,9 +1125,9 @@ jobs:
       - name: Run Security Audit
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            claude -p "/autoresearch:security --diff --fail-on critical --iterations 5"
+            codex exec "/autoresearch:security --diff --fail-on critical --iterations 5"
           else
-            claude -p "/autoresearch:security --fail-on high --iterations 15"
+            codex exec "/autoresearch:security --fail-on high --iterations 15"
           fi
       - name: Upload Report
         uses: actions/upload-artifact@v4
@@ -1155,7 +1155,7 @@ jobs:
           node-version: '20'
       - run: npm ci
       - name: Run autoresearch coverage sprint
-        run: claude -p "/autoresearch --iterations 10 --goal 'Keep coverage above 85%' --verify 'npm test -- --coverage | grep All files' --fail-below 85"
+        run: codex exec "/autoresearch --iterations 10 --goal 'Keep coverage above 85%' --verify 'npm test -- --coverage | grep All files' --fail-below 85"
 ```
 
 ### Nightly improvement loop
@@ -1175,14 +1175,14 @@ jobs:
       - run: npm ci
       - name: Run overnight loop
         run: |
-          claude -p "/autoresearch
+          codex exec "/autoresearch
           Iterations: 50
           Goal: Improve test coverage and reduce bundle size
           Scope: src/**/*.ts
           Verify: npm test -- --coverage | grep 'All files'
           Guard: npm run build"
       - name: Create PR with improvements
-        run: claude -p "/autoresearch:ship --type code-pr --auto"
+        run: codex exec "/autoresearch:ship --type code-pr --auto"
 ```
 
 ---
@@ -1237,26 +1237,22 @@ Verify: python scripts/verify-coverage.py | grep "coverage"
 
 ### LLM-based content quality scorer
 
-Use a fast, cheap model (Haiku) to score content:
+Use a fast, cheap model to score content:
 
 ```javascript
 // scripts/content-quality-scorer.js
-const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 const fs = require('fs');
 
 const content = fs.readFileSync(process.argv[2], 'utf-8');
-const client = new Anthropic();
+const client = new OpenAI();
 
 async function score() {
-  const msg = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 100,
-    messages: [{
-      role: 'user',
-      content: `Score this content 0-100 for clarity, engagement, and SEO. Return ONLY a number.\n\n${content}`
-    }]
+  const response = await client.responses.create({
+    model: 'gpt-4.1-mini',
+    input: `Score this content 0-100 for clarity, engagement, and SEO. Return ONLY a number.\n\n${content}`
   });
-  const score = parseInt(msg.content[0].text.trim());
+  const score = parseInt(response.output_text.trim());
   console.log(`SCORE: ${score}`);
   process.exit(0);
 }
@@ -1267,7 +1263,7 @@ score();
 /autoresearch
 Goal: All blog posts score 80+ on AI-assessed quality
 Scope: content/blog/*.md
-Metric: quality score from Haiku (higher is better)
+Metric: quality score from the scorer (higher is better)
 Verify: node scripts/content-quality-scorer.js content/blog/latest.md
 ```
 

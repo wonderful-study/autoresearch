@@ -19,11 +19,22 @@ mkdir -p ~/plugins
 ln -s $(pwd)/plugins/autoresearch ~/plugins/autoresearch
 ```
 
-When done developing, replace symlinks with stable copies:
+When done developing, replace symlinks with stable copies using the installer:
 ```bash
 rm ~/plugins/autoresearch
 cp -R plugins/autoresearch ~/plugins/autoresearch
 ```
+
+### Codex Development
+
+The canonical plugin source is `plugins/autoresearch/`. After changing the installed skill copy, run:
+
+```bash
+# Sync changes to .agents/ with Codex adaptations
+./scripts/sync-codex.sh
+```
+
+This refreshes `.agents/skills/autoresearch/` from the repo-local Codex plugin bundle and copies the command spec/resources needed by global installs.
 
 ## Repository Structure
 
@@ -41,6 +52,11 @@ autoresearch/
 │       ├── skills/                                ← Explicit Codex skills
 │       ├── references/                            ← Shared workflow protocols
 │       └── README.md                              ← Plugin bundle usage notes
+├── scripts/
+│   ├── install.sh                                 ← Guided Codex installer
+│   ├── sync-codex.sh                              ← Sync plugin skill into .agents/skills
+│   ├── release.sh                                 ← Release automation
+│   └── release.md                                 ← Release checklist
 ├── guide/                                         ← Comprehensive guides — one per command
 │   ├── README.md                                  ← Guide index
 │   ├── getting-started.md                         ← Installation, core concepts, FAQ
@@ -81,6 +97,7 @@ autoresearch/
 | `references/scenario-workflow.md` | `/autoresearch:scenario` scenario exploration. | Adding domains, dimensions, output formats |
 | `references/predict-workflow.md` | `/autoresearch:predict` multi-persona swarm prediction workflow (751 lines). | Adding prediction personas, confidence models, output formats |
 | `references/learn-workflow.md` | `/autoresearch:learn` documentation engine protocol. | Adding doc types, validation checks, generation templates |
+| `references/probe-workflow.md` | `/autoresearch:probe` requirement and assumption interrogation protocol. | Adding probing personas, saturation rules, handoff config behavior |
 | `references/results-logging.md` | TSV log format and reporting rules. | Changing log columns, summary format, reporting intervals |
 | `plugins/autoresearch/commands/*.md` | Sub-command registration files. | Adding new sub-commands (creates the `/autoresearch:name` slash command) |
 | `plugins/autoresearch/.codex-plugin/plugin.json` | Plugin metadata + version. | Version bumps (use `scripts/release.sh`) |

@@ -7,7 +7,7 @@
 Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) — constraint + mechanical metric + autonomous iteration = compounding gains.
 
 [![Codex CLI Plugin](https://img.shields.io/badge/Codex_CLI-Plugin-0B5FFF.svg)](https://developers.openai.com/codex/plugins)
-[![Version](https://img.shields.io/badge/version-1.9.0-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
+[![Version](https://img.shields.io/badge/version-2.0.04-blue.svg)](https://github.com/uditgoenka/autoresearch/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 [![Based on](https://img.shields.io/badge/Based_on-Karpathy's_Autoresearch-orange)](https://github.com/karpathy/autoresearch)
@@ -20,11 +20,35 @@ Based on [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) —
 
 *You don't need AGI. You need a goal, a metric, and a loop that never quits.*
 
+**Codex-native fork with upstream v2.0 workflow updates.**
+
 <br>
 
 [How It Works](#how-it-works) · [Commands](#commands) · [Quick Start](#quick-start) · [Guides](guide/) · [中文指南](README.zh-CN.md) · [FAQ](#faq)
 
 </div>
+
+---
+
+```
+      PLAN              LOOP             DEBUG              FIX            SECURE            SHIP
+ ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+ │   Goal   │     │  Modify  │     │   Find   │     │   Fix    │     │  STRIDE  │     │  Stage   │
+ │  Metric  │────▶│  Verify  │────▶│   Bugs   │────▶│  Errors  │────▶│  OWASP   │────▶│  Deploy  │
+ │  Scope   │     │  Keep/   │     │  Trace   │     │  Repair  │     │  Red     │     │ Release  │
+ └──────────┘     │  Discard │     └──────────┘     └──────────┘     │  Team    │     └──────────┘
+/autoresearch:    └──────────┘    /autoresearch:    /autoresearch:   └──────────┘    /autoresearch:
+  plan            /autoresearch     debug              fix          /autoresearch:      ship
+                                                                     security
+
+ ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+ │  Probe   │     │ Scenario │     │ Predict  │     │  Learn   │     │  Reason  │
+ │ Require- │     │   Edge   │     │ 5-Expert │     │   Docs   │     │  Debate  │
+ │  ments   │     │   Cases  │     │  Swarm   │     │   Gen    │     │ Converge │
+ └──────────┘     └──────────┘     └──────────┘     └──────────┘     └──────────┘
+/autoresearch:   /autoresearch:   /autoresearch:   /autoresearch:   /autoresearch:
+  probe            scenario         predict           learn           reason
+```
 
 ---
 
@@ -89,12 +113,15 @@ Before looping, the agent performs a one-time setup:
 | `/autoresearch:debug` | Autonomous bug-hunting loop — scientific method + iterative investigation |
 | `/autoresearch:fix` | Autonomous fix loop — iteratively repair errors until zero remain |
 | `/autoresearch:scenario` | Scenario-driven use case generator — explore situations, edge cases, derivative scenarios |
-| `/autoresearch:predict` | Multi-persona prediction | Pre-analyze code from 5 expert perspectives before acting |
+| `/autoresearch:predict` | Multi-persona prediction before acting |
 | `/autoresearch:learn` | Autonomous documentation engine — scout codebase, generate/update docs, validate, fix loop |
 | `/autoresearch:reason` | Adversarial refinement — blind judge panel converges subjective content through isolated multi-agent debate |
+| `/autoresearch:probe` | Adversarial requirement / assumption interrogation — 8 personas probe user + codebase until net-new constraints saturate, emits ready-to-run autoresearch config |
 | `Guard: <command>` | Optional safety net — must pass for changes to be kept |
 
-**All commands fall back to direct follow-up questions when required context is missing.** Codex inspects the repo first, then asks for only the missing fields. Power users can skip the follow-up by providing flags inline.
+**All commands use interactive setup when invoked without required context.** Codex inspects the repo first, then asks for only the missing fields. Power users can skip the setup by providing flags inline.
+
+> **Codex users:** Invoke the skill via `$autoresearch` mention syntax. Subcommands are keywords: `$autoresearch plan`, `$autoresearch debug`, etc. Slash-style aliases remain accepted by the wrapper CLI.
 
 ### Quick Decision Guide
 
@@ -120,12 +147,15 @@ Before looping, the agent performs a one-time setup:
 | Debate an architecture decision | `/autoresearch:reason --domain software` |
 | Refine a pitch or proposal adversarially | `/autoresearch:reason --domain business` |
 | Converge on best design then validate | `/autoresearch:reason --chain predict` |
+| Surface hidden constraints before starting | `/autoresearch:probe` |
+| Pre-flight a fuzzy goal then loop | `/autoresearch:probe --chain plan,autoresearch` |
+| Stress-test requirements adversarially | `/autoresearch:probe --adversarial --depth deep` |
 
 ---
 
 ## Quick Start
 
-### 1. Install
+### Codex CLI
 
 **Option A — Repo-local plugin install (recommended):**
 
@@ -133,7 +163,7 @@ Before looping, the agent performs a one-time setup:
 2. Run `/plugins`.
 3. Install the `autoresearch` plugin from this repo's marketplace entry in `.agents/plugins/marketplace.json`.
 
-That gives you all 10 slash commands plus 10 explicit skills in this repo.
+That gives you all 11 workflows, the wrapper CLI, and the v2.0 command spec.
 
 **Option B — Home-local plugin install:**
 ```bash
@@ -145,6 +175,28 @@ cp autoresearch/.agents/plugins/marketplace.json ~/.agents/plugins/marketplace.j
 ```
 
 If you already maintain `~/.agents/plugins/marketplace.json`, merge the `autoresearch` entry instead of overwriting the whole file.
+
+**Option C — Guided installer:**
+```bash
+git clone https://github.com/uditgoenka/autoresearch.git
+cd autoresearch
+./scripts/install.sh --codex --global
+```
+
+**Option D — Manual skill copy:**
+```bash
+git clone https://github.com/uditgoenka/autoresearch.git
+
+# Copy to your project
+cp -r autoresearch/.agents/skills/autoresearch .codex/skills/autoresearch
+```
+
+Or install globally:
+```bash
+cp -r autoresearch/.agents/skills/autoresearch ~/.codex/skills/autoresearch
+```
+
+> **Codex invocation:** Use `$autoresearch` mention syntax in your prompt. Subcommands are keywords — `$autoresearch plan`, `$autoresearch debug`, `$autoresearch security`, etc. Codex discovers installed skills from `${CODEX_HOME:-~/.codex}/skills` and project-local `.codex/skills/` directories.
 
 ### 2. Run It
 
@@ -323,6 +375,40 @@ Iterations: 8
 
 ---
 
+## /autoresearch:probe — Adversarial Requirement Interrogation (v1.10.0)
+
+The requirement-clarification layer for autoresearch. Eight adversarial personas interrogate user and codebase together until net-new constraints per round drop below a threshold (mechanical saturation). Output is the 5 autoresearch primitives (Goal/Scope/Metric/Direction/Verify) plus a `handoff.json` ready to feed any other autoresearch command.
+
+```
+/autoresearch:probe
+Topic: Reduce p99 latency below 200ms for /search
+
+# Pre-flight pipeline — probe → plan → loop
+/autoresearch:probe --chain plan,autoresearch
+Topic: Add multi-tenant isolation to the database layer
+```
+
+**How it works:** Seed Capture → Persona Activation → Codebase Grounding → Round Generation (each persona drafts cold-start questions) → Synthesis (dedupe, cap ≤5) → Answer Capture (single batched direct prompt) → Constraint Extraction (7 atom types) → Cross-Check → Saturation Check → Synthesize & Handoff.
+
+**The 8 personas:** Skeptic, Edge-Case Hunter, Scope Sentinel, Ambiguity Detective, Contradiction Finder, Prior-Art Investigator, Success-Criteria Auditor, Constraint Excavator. Each is cold-start within a round — no persona sees others' candidate questions until synthesis. `--adversarial` rotates Skeptic + Contradiction Finder + Edge-Case Hunter to the front.
+
+| Flag | Purpose |
+|------|---------|
+| `--depth <level>` | shallow (5 rounds), standard (15), deep (30) |
+| `--personas N` | active persona count (3-8, default 6) |
+| `--saturation-threshold N` | net-new atoms threshold (default 2, window K=3) |
+| `--scope <glob>` | codebase glob for grounding |
+| `--chain <targets>` | downstream commands: plan, predict, debug, scenario, reason, fix, ship, learn |
+| `--mode <mode>` | interactive (default) or autonomous (self-answer with confidence labels) |
+| `--adversarial` | rotate the 3 most adversarial personas to the front |
+| `--iterations N` | hard cap on rounds, overrides `--depth` |
+
+**Mechanical saturation:** probe stops when net-new constraints fall below the threshold for K consecutive rounds — not when it "feels done." Other terminations: `BOUNDED` (Iterations exhausted), `USER_INTERRUPT` (Ctrl+C), `SCOPE_LOCKED` (all atoms classified out-of-scope for 2 rounds).
+
+**Output:** Creates `probe/{date}-{slug}/` with probe-spec.md, constraints.tsv, questions-asked.tsv, contradictions.md, hidden-assumptions.md, autoresearch-config.yml, summary.md, handoff.json.
+
+---
+
 ## /autoresearch:scenario — Scenario Explorer (v1.6.0)
 
 Autonomous scenario exploration engine. Takes a seed scenario and iteratively generates situations across 12 dimensions — happy paths, errors, edge cases, abuse, scale, concurrency, temporal, data variation, permissions, integrations, recovery, and state transitions.
@@ -451,7 +537,8 @@ autoresearch/
 │       │   ├── autoresearch-scenario.md           ← /autoresearch:scenario
 │       │   ├── autoresearch-predict.md            ← /autoresearch:predict
 │       │   ├── autoresearch-learn.md              ← /autoresearch:learn
-│       │   └── autoresearch-reason.md             ← /autoresearch:reason
+│       │   ├── autoresearch-reason.md             ← /autoresearch:reason
+│       │   └── autoresearch-probe.md              ← /autoresearch:probe
 │       ├── skills/
 │       │   ├── autoresearch/                      ← Core loop skill
 │       │   ├── autoresearch-plan/
@@ -462,7 +549,8 @@ autoresearch/
 │       │   ├── autoresearch-scenario/
 │       │   ├── autoresearch-predict/
 │       │   ├── autoresearch-learn/
-│       │   └── autoresearch-reason/
+│       │   ├── autoresearch-reason/
+│       │   └── autoresearch/
 │       ├── references/
 │       │   ├── autonomous-loop-protocol.md        ← Shared loop protocol
 │       │   ├── core-principles.md                 ← Shared principles
@@ -475,8 +563,21 @@ autoresearch/
 │       │   ├── predict-workflow.md                ← Multi-persona prediction workflow
 │       │   ├── learn-workflow.md                  ← Documentation engine protocol
 │       │   ├── reason-workflow.md                 ← Adversarial refinement protocol
+│       │   ├── probe-workflow.md                  ← Requirement interrogation protocol
 │       │   └── results-logging.md                 ← TSV tracking format
+│       ├── resources/
+│       │   └── autoresearch-command-spec.json     ← Canonical command spec
+│       ├── scripts/
+│       │   └── autoresearch_cli.py                ← Wrapper CLI
 │       └── README.md                              ← Plugin-specific usage notes
+├── scripts/
+│   ├── install.sh                                 ← Guided Codex installer
+│   ├── sync-codex.sh                              ← Sync plugin skill into .agents/skills
+│   ├── release.sh                                 ← Release automation
+│   └── release.md                                 ← Release checklist
+├── bin/autoresearch                               ← Shell wrapper for the Codex CLI helper
+├── tests/                                         ← Codex wrapper parser tests
+└── LICENSE
 ```
 
 ---
@@ -487,7 +588,7 @@ autoresearch/
 A: Run `/autoresearch:plan` — it analyzes your codebase, suggests metrics, and dry-runs the verify command before you launch.
 
 **Q: Does this work with any project?**
-A: Yes. Any language, framework, or domain. Install it through `/plugins` in this repo or copy `plugins/autoresearch/` plus the marketplace entry for a home-local install.
+A: Yes. Any language, framework, or domain. Install it through `/plugins` in this repo, run `./scripts/install.sh --codex --global`, or copy `.agents/skills/autoresearch/` to `${CODEX_HOME:-~/.codex}/skills/autoresearch`.
 
 **Q: How do I stop the loop?**
 A: `Ctrl+C` or add `Iterations: N` to your inline config to run exactly N iterations. Codex commits before verifying, so your last successful state is always in git.

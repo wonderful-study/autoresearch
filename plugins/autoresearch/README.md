@@ -4,8 +4,10 @@ Codex-native plugin bundle for autonomous goal-directed iteration.
 
 ## Includes
 
-- 10 explicit skills under `skills/`
-- 10 slash commands under `commands/`
+- 11 explicit workflow skills under `skills/`
+- 11 slash-style command definitions under `commands/`
+- Wrapper CLI under `scripts/`
+- Canonical command spec under `resources/`
 - Shared workflow references under `references/`
 
 ## Commands
@@ -20,6 +22,7 @@ Codex-native plugin bundle for autonomous goal-directed iteration.
 - `/autoresearch:predict`
 - `/autoresearch:learn`
 - `/autoresearch:reason`
+- `/autoresearch:probe`
 
 ## Local repo install
 
@@ -28,5 +31,5 @@ Open Codex in this repository and use `/plugins` to install the repo-local `auto
 ## Explicit invocation
 
 - `@autoresearch` to load the plugin
-- `$autoresearch` or a specific `$autoresearch-*` skill to load one workflow directly
+- `$autoresearch` to load the router skill, then use a subcommand such as `$autoresearch probe`
 - slash commands for the command-shaped entry points above

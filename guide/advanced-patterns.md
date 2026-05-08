@@ -337,9 +337,9 @@ jobs:
       - name: Security audit
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            claude -p "/autoresearch:security --diff --fail-on critical --iterations 5"
+            codex exec "/autoresearch:security --diff --fail-on critical --iterations 5"
           else
-            claude -p "/autoresearch:security --fail-on high --iterations 15"
+            codex exec "/autoresearch:security --fail-on high --iterations 15"
           fi
       - name: Upload Report
         uses: actions/upload-artifact@v4
@@ -368,7 +368,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Auto-fix
         run: |
-          claude "/autoresearch:fix Iterations: ${{ inputs.iterations }}"
+          codex exec "/autoresearch:fix Iterations: ${{ inputs.iterations }}"
 ```
 
 ### GitHub Actions: scheduled overnight run
@@ -386,7 +386,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run overnight loop
         run: |
-          claude -p "/autoresearch
+          codex exec "/autoresearch
           Goal: Reduce lint errors and improve coverage
           Iterations: 50
           Guard: npm test"
@@ -406,7 +406,7 @@ autoresearch-security:
   only:
     - merge_requests
   script:
-    - claude -p "/autoresearch:security --diff --fail-on critical --iterations 5"
+    - codex exec "/autoresearch:security --diff --fail-on critical --iterations 5"
   artifacts:
     paths:
       - security/
@@ -420,7 +420,7 @@ autoresearch-security:
 # Quick security scan on staged files only
 staged=$(git diff --cached --name-only | tr '\n' ' ')
 if [ -n "$staged" ]; then
-  claude -p "/autoresearch:security --diff --fail-on critical --iterations 3 --scope $staged"
+  codex exec "/autoresearch:security --diff --fail-on critical --iterations 3 --scope $staged"
 fi
 ```
 
@@ -452,7 +452,7 @@ jobs:
 
       - name: Run autoresearch
         run: |
-          claude --print "/autoresearch
+          codex exec "/autoresearch
           Goal: Improve test coverage
           Scope: src/**/*.ts
           Verify: npx jest --coverage 2>&1 | grep 'All files' | awk '{print \$4}'
@@ -482,7 +482,7 @@ autoresearch:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
-    - claude --print "/autoresearch Iterations: 10 Goal: Improve coverage Verify: pytest --cov"
+    - codex exec "/autoresearch Iterations: 10 Goal: Improve coverage Verify: pytest --cov"
   artifacts:
     paths:
       - autoresearch-results.tsv
